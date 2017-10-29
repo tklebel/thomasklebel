@@ -28,7 +28,7 @@ But all in all, the process is quite straightforward, thanks to
 Yihui Xie's [package](https://github.com/rstudio/blogdown)
 and the most helpful documentation at https://bookdown.org/yihui/blogdown/.
 
-In starting website with a blog I want to mention a few sites I really enjoy
+In starting a website with a blog I want to mention a few sites I really enjoy
 reading, and to which I owe inspirational credit for my own page:
 
 - https://rud.is/b/ by Bob Rudis
