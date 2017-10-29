@@ -1,0 +1,66 @@
+---
+title: Classical nights
+author: Thomas Klebel
+date: '2017-11-04'
+slug: classical-nights
+draft = true
+categories:
+  - Coding
+tags:
+  - R
+---
+
+One of the many inspirations to start blogging was a post by Maëlle Salmon about
+the [program of Radio Swiss classic](http://www.masalmon.eu/2017/04/23/radioswissclassic/). In her post
+Maëlle scraped data about names of composers, durations of pieces, and titles
+of pieces, from which she tries to infer the tempo of pieces. From this data
+what I found most interesting was her list about which composers appear most
+frequently. This list supports the notion of a conservative canon of what counts
+to "classical music".
+
+My general impression about the selection of pieces for performance within the
+classical music world is that pieces are selected quite conservatively. There
+is basically a canon of composers from which pieces are repeatedly performed.
+This canon seems to be quite stable, ranging from J.S.Bach and A.Vivaldi,
+representing what counts as "early music", continuing with the First Viennes
+School (Haydn, Mozart, Beethoven), through composers of the romantic phase (like 
+Schubert, Schumann, Brahms, Verdi, Dvořák, Liszt, Tchaikovsky, Bruckner, Wagner),
+followed by more "modern" composers such as Richard Strauss and Mahler, together
+with Debussy, Chopin and Ravel. Obviously we could list a few more composers,
+but my argument is that what counts to classical music more often than not starts
+with exemplary representatives of "early music" (Bach and Vivaldi) and ends
+with the beginning of the Second Viennese School (Schönberg, Webern) and their
+departure from tonal music.
+
+There would be many ways for trying to proof this hypothesis:
+
+- taking a look at the literature, whether the topic of a "conservative canon" is
+a thing there
+- looking at radio stations
+- looking at performances of typical orchestras or at typical venues
+
+and probably many more.
+
+For startes I wanted to compare what is being aired on Radio Swiss classic
+with the program of an Austrian counterpart - [radio klassik Stephansdom](https://radioklassik.at). Since the internal layout of their
+page is a lot more complicated than the one of Radio Swiss classic^[
+The program is organised into different shows throughout the day, and not a
+continuous stream of music], I will for starters just download pieces from during
+night time (the programme is called "Nacht", german for "night"), which consists
+of 5-7 hours of uninterrupted music. This should compare nicely to the part
+of Maëlle's data on pieces during night time.
+
+# Scraping the data
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(lubridate)
+
+base_url <- "https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&sdd="
+
+# generate dates
+seq(ymd("2017-01-01"), ymd("2017-02-01"), 1) %>% 
+  str_replace_all("-", ".")
+
+```
+
