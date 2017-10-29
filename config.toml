@@ -9,7 +9,7 @@ preserveTaxonomyNames = true
 paginate = 10
 
 # Enable comments by entering your Disqus shortname
-disqusShortname = "Thomas Klebel"
+disqusShortname = "www-thomasklebel-eu"
 
 # Enable analytics by entering your Google Analytics tracking ID
 googleAnalytics = "UA-108879690-1"
