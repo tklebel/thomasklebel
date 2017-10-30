@@ -1,0 +1,149 @@
+---
+title: Scraping Composers from Wikipedia
+author: Thomas Klebel
+date: '2017-10-30'
+slug: scraping-composers-from-wikipedia
+categories:
+  - Coding
+tags:
+  - R
+  - Classical Music
+---
+
+
+
+<pre class="r"><code>library(tidyverse)
+library(rvest)
+
+composers_20th &lt;- &quot;https://en.wikipedia.org/wiki/List_of_20th-century_classical_composers&quot;
+pg &lt;- read_html(composers_20th)
+  
+romantic_table &lt;- pg %&gt;% 
+  html_node(&quot;table.wikitable&quot;) %&gt;%
+  html_table(fill = TRUE)
+
+sortkeys &lt;- pg %&gt;% 
+  html_node(&quot;table.wikitable&quot;) %&gt;%
+  html_nodes(css = &#39;span[class=&quot;sortkey&quot;]&#39;) %&gt;% 
+  html_text()
+
+romantic_composers &lt;- romantic_table %&gt;% 
+  select(Name, contains(&quot;Year&quot;)) %&gt;% 
+  mutate(sortkeys = sortkeys,
+         Name = str_replace(Name, sortkeys, &quot;&quot;)) %&gt;% 
+  select(-sortkeys)
+
+romantic_composers %&gt;% 
+  head(20) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Year of birth</th>
+<th align="right">Year of death</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Charles Dancla</td>
+<td align="left">1817</td>
+<td align="right">1907</td>
+</tr>
+<tr class="even">
+<td align="left">Luigi Arditi</td>
+<td align="left">1822</td>
+<td align="right">1903</td>
+</tr>
+<tr class="odd">
+<td align="left">Theodor Kirchner</td>
+<td align="left">1823</td>
+<td align="right">1903</td>
+</tr>
+<tr class="even">
+<td align="left">Carl Reinecke</td>
+<td align="left">1824</td>
+<td align="right">1910</td>
+</tr>
+<tr class="odd">
+<td align="left">Richard Hol</td>
+<td align="left">1825</td>
+<td align="right">1904</td>
+</tr>
+<tr class="even">
+<td align="left">Ludwig Minkus</td>
+<td align="left">1826</td>
+<td align="right">1917</td>
+</tr>
+<tr class="odd">
+<td align="left">Morten Eskesen</td>
+<td align="left">1826</td>
+<td align="right">1913</td>
+</tr>
+<tr class="even">
+<td align="left">François-Auguste Gevaert</td>
+<td align="left">1828</td>
+<td align="right">1908</td>
+</tr>
+<tr class="odd">
+<td align="left">Clémence de Grandval</td>
+<td align="left">1828</td>
+<td align="right">1907</td>
+</tr>
+<tr class="even">
+<td align="left">James Cutler Dunn Parker</td>
+<td align="left">1828</td>
+<td align="right">1916</td>
+</tr>
+<tr class="odd">
+<td align="left">Jacques Blumenthal</td>
+<td align="left">1829</td>
+<td align="right">1908</td>
+</tr>
+<tr class="even">
+<td align="left">Karl Goldmark</td>
+<td align="left">1830</td>
+<td align="right">1915</td>
+</tr>
+<tr class="odd">
+<td align="left">Karl Klindworth</td>
+<td align="left">1830</td>
+<td align="right">1916</td>
+</tr>
+<tr class="even">
+<td align="left">Hans Bronsart von Schellendorff</td>
+<td align="left">1830</td>
+<td align="right">1913</td>
+</tr>
+<tr class="odd">
+<td align="left">Jan Gerard Palm</td>
+<td align="left">1831</td>
+<td align="right">1906</td>
+</tr>
+<tr class="even">
+<td align="left">Benjamin Dwight Allen</td>
+<td align="left">1831</td>
+<td align="right">1914</td>
+</tr>
+<tr class="odd">
+<td align="left">Salomon Jadassohn</td>
+<td align="left">1831</td>
+<td align="right">1902</td>
+</tr>
+<tr class="even">
+<td align="left">Joseph Joachim</td>
+<td align="left">1831</td>
+<td align="right">1907</td>
+</tr>
+<tr class="odd">
+<td align="left">Mathilde Hannah von Rothschild</td>
+<td align="left">1832</td>
+<td align="right">1924</td>
+</tr>
+<tr class="even">
+<td align="left">Charles-Wilfrid de Bériot</td>
+<td align="left">1833</td>
+<td align="right">1914</td>
+</tr>
+</tbody>
+</table>

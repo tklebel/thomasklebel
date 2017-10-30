@@ -1,0 +1,39 @@
+---
+title: Scraping Composers from Wikipedia
+author: Thomas Klebel
+date: '2017-10-30'
+slug: scraping-composers-from-wikipedia
+categories:
+  - Coding
+tags:
+  - R
+  - Classical Music
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(rvest)
+
+composers_20th <- "https://en.wikipedia.org/wiki/List_of_20th-century_classical_composers"
+pg <- read_html(composers_20th)
+  
+romantic_table <- pg %>% 
+  html_node("table.wikitable") %>%
+  html_table(fill = TRUE)
+
+sortkeys <- pg %>% 
+  html_node("table.wikitable") %>%
+  html_nodes(css = 'span[class="sortkey"]') %>% 
+  html_text()
+
+romantic_composers <- romantic_table %>% 
+  select(Name, contains("Year")) %>% 
+  mutate(sortkeys = sortkeys,
+         Name = str_replace(Name, sortkeys, "")) %>% 
+  select(-sortkeys)
+
+romantic_composers %>% 
+  head(20) %>% 
+  knitr::kable()
+
+```
