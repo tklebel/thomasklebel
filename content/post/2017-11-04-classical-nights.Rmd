@@ -55,6 +55,8 @@ of Maëlle's data on pieces during night time.
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
+library(rvest)
+
 
 base_url <- "https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&sdd="
 
@@ -62,5 +64,137 @@ base_url <- "https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&sdd="
 seq(ymd("2017-01-01"), ymd("2017-02-01"), 1) %>% 
   str_replace_all("-", ".")
 
+# second url
+# https://radioklassik.at/programm/sendungsdetails/?sdk=radio_klassik_stephansdom_nacht&sdd=14.10.2016
+# 
+# https://radioklassik.at/programm/sendungsdetails/?sdk=notturno&sdd=17.08.2013
+# 
+# https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&sdd=14.01.2017
+
+getwd()
+
 ```
+
+```{r, eval=FALSE, echo=FALSE}
+library("rvest")
+library("purrr")
+library("stringi")
+library("lubridate")
+library("tidyverse")
+
+# using purrr::safely is cool because if the page 
+# is broken you get NULL as an output
+s_read_html <- purrr::safely(read_html)
+
+# helper for brevity
+xtract_nodes <- function(node, css) {
+  html_nodes(node, css) %>% html_text(trim = TRUE)
+}
+
+get_one_day_program <- function(date=Sys.Date(),
+                                base_url="http://www.radioswissclassic.ch/en/music-programme/search/%s",
+                                pb=NULL) {
+  # progress bar magic!
+  if (!is.null(pb)) pb$tick()$print()
+
+  # that's the part where you're nice towards the website
+  Sys.sleep(sample(5,1)) # ideally, make this sample(5,1)
+
+  date <- ymd(date) # handles case where input is character ISO date
+
+  pg <- s_read_html(sprintf(base_url, format(date, "%Y%m%d")))
+
+  if (!is.null(pg$result)) {
+# go read Bob Rudis' post, in particular to read about
+# the extra selector for "playlist"
+    dplyr::data_frame(
+
+      date = date,
+      time = xtract_nodes(pg$result, 'div[class="playlist"] *
+                                            span[class="time hidden-xs"]') %>% hm(),
+      datetime = update(date, hour = hour(time), minute = minute(time)),
+      artist = xtract_nodes(pg$result, 'div[class="playlist"] * span[class="titletag"]'),
+      title = xtract_nodes(pg$result, 'div[class="playlist"] * span[class="artist"]')
+
+    )
+
+  } else {
+    closeAllConnections()
+    NULL
+  }
+
+}
+
+search_dates <- seq(from = ymd("2008-09-01"), to = ymd("2017-04-22"), by = "1 day")
+
+# how you can make the progress bar work,
+# estimate the time necessary for 5 requests
+pb <- dplyr::progress_estimated(length(search_dates))
+programs_df <- map_df(search_dates, get_one_day_program, pb = pb)
+programs_df <- programs_df %>%
+   dplyr::select(-time) %>%
+   dplyr::mutate(datetime = force_tz(datetime, tz = "Europe/Vienna"))
+
+
+write_rds(programs_df, "2017-11_swiss_radio.rds", compress = "gz")
+```
+
+
+
+```{r}
+programs_df <- read_rds("2017-11_swiss_radio.rds")
+programs_df %>% 
+  filter(artist == "Antonin Dvorak") %>% 
+  count(title) %>% 
+  arrange(desc(n)) %>% 
+  head(30) %>% 
+  mutate(index = 1:n()) %>% 
+  select(index, everything()) %>% 
+  knitr::kable()
+```
+
+
+```{r}
+programs_df %>% 
+  mutate(opera = str_detect(title, "Opera"),
+         symphony = str_detect(title, "Symphony"),
+         concerto = str_detect(title, "Concerto"),
+         time = hour(datetime)) %>% 
+  group_by(time) %>% 
+  summarise(n = n(),
+            operas = sum(opera)/n,
+            symphonies = sum(symphony)/n,
+            concertos = sum(concerto)/n) %>% 
+  select(-n) %>% 
+  gather(type, val, -time) %>% 
+  ggplot(aes(time, val, colour = type)) +
+  geom_line() +
+  hrbrmisc::theme_hrbrmstr()
+
+# bad approach, should normalise over duration
+```
+
+
+```{r}
+pdata <- programs_df %>% 
+  filter(artist %in% c("Johannes Brahms", "Wolfgang Amadeus Mozart")) %>% 
+  mutate(opera = str_detect(title, "Opera"),
+         symphony = str_detect(title, "Symphony"),
+         concerto = str_detect(title, "Concerto"),
+         time = hour(datetime)) %>% 
+  group_by(artist) %>% 
+  summarise(n = n(),
+            operas = sum(opera)/n,
+            symphonies = sum(symphony)/n,
+            concertos = sum(concerto)/n) %>% 
+  select(-n) %>% 
+  gather(type, val, -artist)
+
+pdata %>% 
+  ggplot(aes(type, val, fill = artist)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  hrbrmisc::theme_hrbrmstr()
+```
+
 

@@ -26,6 +26,8 @@ tags:
 <h1>Scraping the data</h1>
 <pre class="r"><code>library(tidyverse)
 library(lubridate)
+library(rvest)
+
 
 base_url &lt;- &quot;https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&amp;sdd=&quot;
 
@@ -39,6 +41,227 @@ seq(ymd(&quot;2017-01-01&quot;), ymd(&quot;2017-02-01&quot;), 1) %&gt;%
 ## [21] &quot;2017.01.21&quot; &quot;2017.01.22&quot; &quot;2017.01.23&quot; &quot;2017.01.24&quot; &quot;2017.01.25&quot;
 ## [26] &quot;2017.01.26&quot; &quot;2017.01.27&quot; &quot;2017.01.28&quot; &quot;2017.01.29&quot; &quot;2017.01.30&quot;
 ## [31] &quot;2017.01.31&quot; &quot;2017.02.01&quot;</code></pre>
+<pre class="r"><code># second url
+# https://radioklassik.at/programm/sendungsdetails/?sdk=radio_klassik_stephansdom_nacht&amp;sdd=14.10.2016
+# 
+# https://radioklassik.at/programm/sendungsdetails/?sdk=notturno&amp;sdd=17.08.2013
+# 
+# https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&amp;sdd=14.01.2017
+
+getwd()</code></pre>
+<pre><code>## [1] &quot;/Users/tklebel/Documents/Software/R/thomasklebel/content/post&quot;</code></pre>
+<pre class="r"><code>programs_df &lt;- read_rds(&quot;2017-11_swiss_radio.rds&quot;)
+programs_df %&gt;% 
+  filter(artist == &quot;Antonin Dvorak&quot;) %&gt;% 
+  count(title) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(30) %&gt;% 
+  mutate(index = 1:n()) %&gt;% 
+  select(index, everything()) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">index</th>
+<th align="left">title</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">Slavonic Dance In F Major Op. 46 No. 4 “Sousedska”</td>
+<td align="right">567</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">“Tempo di Valse” From Serenade In E Major Op. 22</td>
+<td align="right">493</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">Slavonic Dance In E Minor Op. 72 No. 2</td>
+<td align="right">493</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="left">Slavonic Dance In A Flat Major Op. 72 No. 8</td>
+<td align="right">475</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">Rondo In G Minor Op. 94 For Cello And Orchestra</td>
+<td align="right">458</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="left">“Allegretto grazioso” From Symphony No. 8 In G Major Op. 88</td>
+<td align="right">402</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="left">Largo From Symphony No. 9 Op. 95 “From the New World”</td>
+<td align="right">350</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="left">Slavonic Dance In D Major Op. 46 No. 6</td>
+<td align="right">342</td>
+</tr>
+<tr class="odd">
+<td align="right">9</td>
+<td align="left">Slavonic Dance In D Flat Major Op. 72 No. 4</td>
+<td align="right">326</td>
+</tr>
+<tr class="even">
+<td align="right">10</td>
+<td align="left">“Song to the Moon” From The Opera “Rusalka”</td>
+<td align="right">315</td>
+</tr>
+<tr class="odd">
+<td align="right">11</td>
+<td align="left">Humoresque Op. 101 No. 7</td>
+<td align="right">293</td>
+</tr>
+<tr class="even">
+<td align="right">12</td>
+<td align="left">Slavonic Dance In E Minor “Allegretto scherzando” Op. 46 No. 2</td>
+<td align="right">293</td>
+</tr>
+<tr class="odd">
+<td align="right">13</td>
+<td align="left">Scherzo From Symphony No. 7 In D Minor Op. 70</td>
+<td align="right">284</td>
+</tr>
+<tr class="even">
+<td align="right">14</td>
+<td align="left">Romance For Violin And Orchestra In F Minor Op. 11</td>
+<td align="right">278</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="left">Slavonic Dance Op. 46 No. 3 In A Flat Major “Polka”</td>
+<td align="right">245</td>
+</tr>
+<tr class="even">
+<td align="right">16</td>
+<td align="left">Waltz Op. 54 No. 1 In A Major</td>
+<td align="right">240</td>
+</tr>
+<tr class="odd">
+<td align="right">17</td>
+<td align="left">“Scherzo capriccioso” Op. 66</td>
+<td align="right">234</td>
+</tr>
+<tr class="even">
+<td align="right">18</td>
+<td align="left">Slavonic Dance Op. 46 No. 6 In D Major “Sousedska”</td>
+<td align="right">234</td>
+</tr>
+<tr class="odd">
+<td align="right">19</td>
+<td align="left">Moderato From Serenade For Strings In E Major Op. 22</td>
+<td align="right">229</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="left">Prague Waltz</td>
+<td align="right">220</td>
+</tr>
+<tr class="odd">
+<td align="right">21</td>
+<td align="left">3 Bagatelles Op. 47</td>
+<td align="right">200</td>
+</tr>
+<tr class="even">
+<td align="right">22</td>
+<td align="left">Romance For Violin And Orchestra Op. 11</td>
+<td align="right">192</td>
+</tr>
+<tr class="odd">
+<td align="right">23</td>
+<td align="left">“Adagio non troppo” From Cello Concerto In B Minor Op. 104</td>
+<td align="right">191</td>
+</tr>
+<tr class="even">
+<td align="right">24</td>
+<td align="left">Romance And Finale From Bohemian (Czech) Suite Op. 39</td>
+<td align="right">187</td>
+</tr>
+<tr class="odd">
+<td align="right">25</td>
+<td align="left">Slavonic Dances Op. 46 No. 7 and 8</td>
+<td align="right">186</td>
+</tr>
+<tr class="even">
+<td align="right">26</td>
+<td align="left">“Scherzo furiant” From Symphony No. 6 In D Major Op. 60</td>
+<td align="right">181</td>
+</tr>
+<tr class="odd">
+<td align="right">27</td>
+<td align="left">Moderato From Serenade For Strings In E Major Op. 22 (CH)</td>
+<td align="right">172</td>
+</tr>
+<tr class="even">
+<td align="right">28</td>
+<td align="left">Slavonic Dances Op. 46 No. 2 and 3</td>
+<td align="right">162</td>
+</tr>
+<tr class="odd">
+<td align="right">29</td>
+<td align="left">Symphony No. 9 In E Minor Op. 95 “From The New World”</td>
+<td align="right">159</td>
+</tr>
+<tr class="even">
+<td align="right">30</td>
+<td align="left">Slavonic Dances Op. 72 No. 6 and 7</td>
+<td align="right">153</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>programs_df %&gt;% 
+  mutate(opera = str_detect(title, &quot;Opera&quot;),
+         symphony = str_detect(title, &quot;Symphony&quot;),
+         concerto = str_detect(title, &quot;Concerto&quot;),
+         time = hour(datetime)) %&gt;% 
+  group_by(time) %&gt;% 
+  summarise(n = n(),
+            operas = sum(opera)/n,
+            symphonies = sum(symphony)/n,
+            concertos = sum(concerto)/n) %&gt;% 
+  select(-n) %&gt;% 
+  gather(type, val, -time) %&gt;% 
+  ggplot(aes(time, val, colour = type)) +
+  geom_line() +
+  hrbrmisc::theme_hrbrmstr()</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x): unknown timezone &#39;default/Europe/Vienna&#39;</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz = tz(x)): unknown timezone &#39;default/
+## Europe/Vienna&#39;</code></pre>
+<p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code># bad approach, should normalise over duration</code></pre>
+<pre class="r"><code>pdata &lt;- programs_df %&gt;% 
+  filter(artist %in% c(&quot;Johannes Brahms&quot;, &quot;Wolfgang Amadeus Mozart&quot;)) %&gt;% 
+  mutate(opera = str_detect(title, &quot;Opera&quot;),
+         symphony = str_detect(title, &quot;Symphony&quot;),
+         concerto = str_detect(title, &quot;Concerto&quot;),
+         time = hour(datetime)) %&gt;% 
+  group_by(artist) %&gt;% 
+  summarise(n = n(),
+            operas = sum(opera)/n,
+            symphonies = sum(symphony)/n,
+            concertos = sum(concerto)/n) %&gt;% 
+  select(-n) %&gt;% 
+  gather(type, val, -artist)</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x): unknown timezone &#39;default/Europe/Vienna&#39;</code></pre>
+<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz = tz(x)): unknown timezone &#39;default/
+## Europe/Vienna&#39;</code></pre>
+<pre class="r"><code>pdata %&gt;% 
+  ggplot(aes(type, val, fill = artist)) +
+  geom_col(position = &quot;dodge&quot;) +
+  coord_flip() +
+  hrbrmisc::theme_hrbrmstr()</code></pre>
+<p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div class="footnotes">
 <hr />
