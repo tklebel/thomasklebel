@@ -57,7 +57,7 @@ this function we leverage `str_extract` from the `stringr`-package and some
 regex-expressions, which I verbalise with inline comments.
 
 ```{r}
-extract_info <- function(df, period) {
+extract_info <- function(df) {
   df %>% 
     mutate(
       # regex: start from beginning until there is a " (", which is omitted
@@ -67,8 +67,7 @@ extract_info <- function(df, period) {
       # regex: extract the last four digits, either before ")" or before "?)"
       year_of_death = str_extract(complete, "\\d{4}(?=\\??\\))")) %>% 
     select(-complete) %>% 
-    mutate_at(c("year_of_birth", "year_of_death"), as.numeric) %>% 
-    mutate(period = period)
+    mutate_at(c("year_of_birth", "year_of_death"), as.numeric)
 }
 ```
 
@@ -77,7 +76,7 @@ After defining the function we can use it on our baroque composers:
 
 ```{r}
 baroque_composers <- baroque_composers %>% 
-  extract_info("baroque")
+  extract_info()
 
 print_composers(baroque_composers)
 ```
@@ -99,7 +98,7 @@ classical_composers <- pg %>%
   html_nodes("li") %>% 
   html_text() %>% 
   data_frame(complete = .) %>% 
-  extract_info("classical")
+  extract_info()
 
 print_composers(classical_composers)
 ```
@@ -123,7 +122,6 @@ composers_romantic <- pg %>%
                        c("Date born"),
                        function(x) {str_extract(x, "\\d{4}") %>% parse_number()})) %>%
   bind_rows() %>% 
-  mutate(period = "romantic") %>% 
   rename(composer = Name,
          year_of_birth = "Date born", 
          year_of_death = "Date died")
@@ -165,8 +163,7 @@ composers_20th <- table_20 %>%
          year_of_death = "Year of death") %>% 
   mutate(sortkeys = sortkeys,
          composer = str_replace(composer, sortkeys, ""),
-         year_of_birth = parse_number(year_of_birth),
-         period = "20th_century") %>% 
+         year_of_birth = parse_number(year_of_birth)) %>% 
   select(-sortkeys)
 
 print_composers(composers_20th)

@@ -35,7 +35,7 @@ baroque_composers &lt;- pg %&gt;%
   html_text() %&gt;% 
   data_frame(complete = .)</code></pre>
 <p>In the next step we will extract the name, date of birth and of death. For this I will define a function, since we can re-use the code for other eras too. In this function we leverage <code>str_extract</code> from the <code>stringr</code>-package and some regex-expressions, which I verbalise with inline comments.</p>
-<pre class="r"><code>extract_info &lt;- function(df, period) {
+<pre class="r"><code>extract_info &lt;- function(df) {
   df %&gt;% 
     mutate(
       # regex: start from beginning until there is a &quot; (&quot;, which is omitted
@@ -45,12 +45,11 @@ baroque_composers &lt;- pg %&gt;%
       # regex: extract the last four digits, either before &quot;)&quot; or before &quot;?)&quot;
       year_of_death = str_extract(complete, &quot;\\d{4}(?=\\??\\))&quot;)) %&gt;% 
     select(-complete) %&gt;% 
-    mutate_at(c(&quot;year_of_birth&quot;, &quot;year_of_death&quot;), as.numeric) %&gt;% 
-    mutate(period = period)
+    mutate_at(c(&quot;year_of_birth&quot;, &quot;year_of_death&quot;), as.numeric)
 }</code></pre>
 <p>After defining the function we can use it on our baroque composers:</p>
 <pre class="r"><code>baroque_composers &lt;- baroque_composers %&gt;% 
-  extract_info(&quot;baroque&quot;)
+  extract_info()
 
 print_composers(baroque_composers)</code></pre>
 <table>
@@ -59,7 +58,6 @@ print_composers(baroque_composers)</code></pre>
 <th align="left">composer</th>
 <th align="right">year_of_birth</th>
 <th align="right">year_of_death</th>
-<th align="left">period</th>
 </tr>
 </thead>
 <tbody>
@@ -67,61 +65,51 @@ print_composers(baroque_composers)</code></pre>
 <td align="left">Philippe de Monte</td>
 <td align="right">1521</td>
 <td align="right">1603</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="even">
 <td align="left">Baldassare Donato</td>
 <td align="right">1525</td>
 <td align="right">1603</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="odd">
 <td align="left">Costanzo Porta</td>
 <td align="right">1529</td>
 <td align="right">1601</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="even">
 <td align="left">Jiří Rychnovský</td>
 <td align="right">1529</td>
 <td align="right">1616</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="odd">
 <td align="left">Guillaume Costeley</td>
 <td align="right">1530</td>
 <td align="right">1606</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="even">
 <td align="left">Fabritio Caroso</td>
 <td align="right">1530</td>
 <td align="right">1620</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="odd">
 <td align="left">Mateo Flecha the Younger</td>
 <td align="right">1530</td>
 <td align="right">1604</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="even">
 <td align="left">Gianmatteo Asola</td>
 <td align="right">1532</td>
 <td align="right">1609</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="odd">
 <td align="left">Claudio Merulo</td>
 <td align="right">1533</td>
 <td align="right">1604</td>
-<td align="left">baroque</td>
 </tr>
 <tr class="even">
 <td align="left">Francesco Soto de Langa</td>
 <td align="right">1534</td>
 <td align="right">1619</td>
-<td align="left">baroque</td>
 </tr>
 </tbody>
 </table>
@@ -139,7 +127,7 @@ classical_composers &lt;- pg %&gt;%
   html_nodes(&quot;li&quot;) %&gt;% 
   html_text() %&gt;% 
   data_frame(complete = .) %&gt;% 
-  extract_info(&quot;classical&quot;)
+  extract_info()
 
 print_composers(classical_composers)</code></pre>
 <table>
@@ -148,7 +136,6 @@ print_composers(classical_composers)</code></pre>
 <th align="left">composer</th>
 <th align="right">year_of_birth</th>
 <th align="right">year_of_death</th>
-<th align="left">period</th>
 </tr>
 </thead>
 <tbody>
@@ -156,61 +143,51 @@ print_composers(classical_composers)</code></pre>
 <td align="left">Giacomo Antonio Perti</td>
 <td align="right">1661</td>
 <td align="right">1756</td>
-<td align="left">classical</td>
 </tr>
 <tr class="even">
 <td align="left">Nicolas Siret</td>
 <td align="right">1663</td>
 <td align="right">1754</td>
-<td align="left">classical</td>
 </tr>
 <tr class="odd">
 <td align="left">Michele Mascitti</td>
 <td align="right">1664</td>
 <td align="right">1760</td>
-<td align="left">classical</td>
 </tr>
 <tr class="even">
 <td align="left">Johann Christoph Pepusch</td>
 <td align="right">1667</td>
 <td align="right">1752</td>
-<td align="left">classical</td>
 </tr>
 <tr class="odd">
 <td align="left">Johann Nicolaus Bach</td>
 <td align="right">1669</td>
 <td align="right">1753</td>
-<td align="left">classical</td>
 </tr>
 <tr class="even">
 <td align="left">Giuseppe Avitrano</td>
 <td align="right">1670</td>
 <td align="right">1756</td>
-<td align="left">classical</td>
 </tr>
 <tr class="odd">
 <td align="left">Louis de Caix d’Hervelois</td>
 <td align="right">1670</td>
 <td align="right">1760</td>
-<td align="left">classical</td>
 </tr>
 <tr class="even">
 <td align="left">Richard Leveridge</td>
 <td align="right">1670</td>
 <td align="right">1758</td>
-<td align="left">classical</td>
 </tr>
 <tr class="odd">
 <td align="left">Tomaso Albinoni</td>
 <td align="right">1671</td>
 <td align="right">1751</td>
-<td align="left">classical</td>
 </tr>
 <tr class="even">
 <td align="left">Azzolino della Ciaja or della Ciaia or della Araja</td>
 <td align="right">1671</td>
 <td align="right">1755</td>
-<td align="left">classical</td>
 </tr>
 </tbody>
 </table>
@@ -228,7 +205,6 @@ composers_romantic &lt;- pg %&gt;%
                        c(&quot;Date born&quot;),
                        function(x) {str_extract(x, &quot;\\d{4}&quot;) %&gt;% parse_number()})) %&gt;%
   bind_rows() %&gt;% 
-  mutate(period = &quot;romantic&quot;) %&gt;% 
   rename(composer = Name,
          year_of_birth = &quot;Date born&quot;, 
          year_of_death = &quot;Date died&quot;)</code></pre>
@@ -294,8 +270,7 @@ composers_20th &lt;- table_20 %&gt;%
          year_of_death = &quot;Year of death&quot;) %&gt;% 
   mutate(sortkeys = sortkeys,
          composer = str_replace(composer, sortkeys, &quot;&quot;),
-         year_of_birth = parse_number(year_of_birth),
-         period = &quot;20th_century&quot;) %&gt;% 
+         year_of_birth = parse_number(year_of_birth)) %&gt;% 
   select(-sortkeys)
 
 print_composers(composers_20th)</code></pre>
@@ -305,7 +280,6 @@ print_composers(composers_20th)</code></pre>
 <th align="left">composer</th>
 <th align="right">year_of_birth</th>
 <th align="right">year_of_death</th>
-<th align="left">period</th>
 </tr>
 </thead>
 <tbody>
@@ -313,61 +287,51 @@ print_composers(composers_20th)</code></pre>
 <td align="left">Charles Dancla</td>
 <td align="right">1817</td>
 <td align="right">1907</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Luigi Arditi</td>
 <td align="right">1822</td>
 <td align="right">1903</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Theodor Kirchner</td>
 <td align="right">1823</td>
 <td align="right">1903</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Carl Reinecke</td>
 <td align="right">1824</td>
 <td align="right">1910</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Richard Hol</td>
 <td align="right">1825</td>
 <td align="right">1904</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Ludwig Minkus</td>
 <td align="right">1826</td>
 <td align="right">1917</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Morten Eskesen</td>
 <td align="right">1826</td>
 <td align="right">1913</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">François-Auguste Gevaert</td>
 <td align="right">1828</td>
 <td align="right">1908</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Clémence de Grandval</td>
 <td align="right">1828</td>
 <td align="right">1907</td>
-<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">James Cutler Dunn Parker</td>
 <td align="right">1828</td>
 <td align="right">1916</td>
-<td align="left">20th_century</td>
 </tr>
 </tbody>
 </table>
