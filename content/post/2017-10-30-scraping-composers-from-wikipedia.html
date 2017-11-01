@@ -13,13 +13,224 @@ tags:
 
 
 
+<p>In this post I will demonstrate how to download data about classical composers from wikipedia. Admittedly, I’m not an expert in web-scraping. The approach I will demonstrate works for me, but there might be neater or more robust ways to acheive the same result.</p>
+<p>Wikipedia hast quite extensive lists on composerse of classical music. For the purpose of informing my last post on the music played on radio swiss classic, I wanted to add information on when the highest ranking composers lived.</p>
+<p>I will section the post according to wikipedia’s structure into baroque, classical era, romantic era and 20th century.</p>
+<p>As for packages, we will use the <code>tidyverse</code> for general functions and <code>rvest</code> for scraping the pages.</p>
 <pre class="r"><code>library(tidyverse)
 library(rvest)
 
-composers_20th &lt;- &quot;https://en.wikipedia.org/wiki/List_of_20th-century_classical_composers&quot;
-pg &lt;- read_html(composers_20th)
+# convenience function to print first few lines of data.frames
+print_composers &lt;- function(df, n = 10) df %&gt;% head(n) %&gt;% knitr::kable()
+
+theme_set(hrbrmisc::theme_hrbrmstr())</code></pre>
+<div id="baroque-period" class="section level1">
+<h1>Baroque period</h1>
+<p>For this period, the data is in a simple list of the following format: <code>'First name' 'Surname' ('date of birth' - 'date of death')</code>.</p>
+<pre class="r"><code>link_baroque &lt;- &quot;https://en.wikipedia.org/wiki/List_of_Baroque_composers&quot;
+pg &lt;- read_html(link_baroque)
+
+baroque_composers &lt;- pg %&gt;% 
+  html_nodes(&quot;ul&quot;) %&gt;%  
+  .[2:9] %&gt;%  # only those lists are of interet to us
+  html_nodes(&quot;li&quot;) %&gt;% 
+  html_text() %&gt;% 
+  data_frame(complete = .)</code></pre>
+<p>In the next step we will extract the name, date of birth and of death. For this I will define a function, since we can re-use the code for other eras too. In this function we leverage <code>str_extract</code> from the <code>stringr</code>-package and some regex-expressions, which I verbalise with inline comments.</p>
+<pre class="r"><code>extract_info &lt;- function(df, period) {
+  df %&gt;% 
+    mutate(
+      # regex: start from beginning until there is a &quot; (&quot;, which is omitted
+      composer = str_extract(complete, &quot;^.*?(?=\\s\\()&quot;), 
+      # regex: extract the first four digits
+      year_of_birth = str_extract(complete, &quot;\\d{4}&quot;),
+      # regex: extract the last four digits, either before &quot;)&quot; or before &quot;?)&quot;
+      year_of_death = str_extract(complete, &quot;\\d{4}(?=\\??\\))&quot;)) %&gt;% 
+    select(-complete) %&gt;% 
+    mutate_at(c(&quot;year_of_birth&quot;, &quot;year_of_death&quot;), as.numeric) %&gt;% 
+    mutate(period = period)
+}</code></pre>
+<p>After defining the function we can use it on our baroque composers:</p>
+<pre class="r"><code>baroque_composers &lt;- baroque_composers %&gt;% 
+  extract_info(&quot;baroque&quot;)
+
+print_composers(baroque_composers)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">composer</th>
+<th align="right">year_of_birth</th>
+<th align="right">year_of_death</th>
+<th align="left">period</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Philippe de Monte</td>
+<td align="right">1521</td>
+<td align="right">1603</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="even">
+<td align="left">Baldassare Donato</td>
+<td align="right">1525</td>
+<td align="right">1603</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="odd">
+<td align="left">Costanzo Porta</td>
+<td align="right">1529</td>
+<td align="right">1601</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="even">
+<td align="left">Jiří Rychnovský</td>
+<td align="right">1529</td>
+<td align="right">1616</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="odd">
+<td align="left">Guillaume Costeley</td>
+<td align="right">1530</td>
+<td align="right">1606</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="even">
+<td align="left">Fabritio Caroso</td>
+<td align="right">1530</td>
+<td align="right">1620</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="odd">
+<td align="left">Mateo Flecha the Younger</td>
+<td align="right">1530</td>
+<td align="right">1604</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="even">
+<td align="left">Gianmatteo Asola</td>
+<td align="right">1532</td>
+<td align="right">1609</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="odd">
+<td align="left">Claudio Merulo</td>
+<td align="right">1533</td>
+<td align="right">1604</td>
+<td align="left">baroque</td>
+</tr>
+<tr class="even">
+<td align="left">Francesco Soto de Langa</td>
+<td align="right">1534</td>
+<td align="right">1619</td>
+<td align="left">baroque</td>
+</tr>
+</tbody>
+</table>
+<p>There are a few edge cases, which I didn’t catch, but this should be sufficient four our purposes.</p>
+</div>
+<div id="classical-era" class="section level1">
+<h1>Classical era</h1>
+<p>For the classical era we can use the same procedure as above.</p>
+<pre class="r"><code>link_classical &lt;- &quot;https://en.wikipedia.org/wiki/List_of_Classical-era_composers&quot;
+pg &lt;- read_html(link_classical)
+
+classical_composers &lt;- pg %&gt;% 
+  html_nodes(&quot;ul&quot;) %&gt;%  
+  .[2:6] %&gt;%  # only those lists are of interet to us
+  html_nodes(&quot;li&quot;) %&gt;% 
+  html_text() %&gt;% 
+  data_frame(complete = .) %&gt;% 
+  extract_info(&quot;classical&quot;)
+
+print_composers(classical_composers)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">composer</th>
+<th align="right">year_of_birth</th>
+<th align="right">year_of_death</th>
+<th align="left">period</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Giacomo Antonio Perti</td>
+<td align="right">1661</td>
+<td align="right">1756</td>
+<td align="left">classical</td>
+</tr>
+<tr class="even">
+<td align="left">Nicolas Siret</td>
+<td align="right">1663</td>
+<td align="right">1754</td>
+<td align="left">classical</td>
+</tr>
+<tr class="odd">
+<td align="left">Michele Mascitti</td>
+<td align="right">1664</td>
+<td align="right">1760</td>
+<td align="left">classical</td>
+</tr>
+<tr class="even">
+<td align="left">Johann Christoph Pepusch</td>
+<td align="right">1667</td>
+<td align="right">1752</td>
+<td align="left">classical</td>
+</tr>
+<tr class="odd">
+<td align="left">Johann Nicolaus Bach</td>
+<td align="right">1669</td>
+<td align="right">1753</td>
+<td align="left">classical</td>
+</tr>
+<tr class="even">
+<td align="left">Giuseppe Avitrano</td>
+<td align="right">1670</td>
+<td align="right">1756</td>
+<td align="left">classical</td>
+</tr>
+<tr class="odd">
+<td align="left">Louis de Caix d’Hervelois</td>
+<td align="right">1670</td>
+<td align="right">1760</td>
+<td align="left">classical</td>
+</tr>
+<tr class="even">
+<td align="left">Richard Leveridge</td>
+<td align="right">1670</td>
+<td align="right">1758</td>
+<td align="left">classical</td>
+</tr>
+<tr class="odd">
+<td align="left">Tomaso Albinoni</td>
+<td align="right">1671</td>
+<td align="right">1751</td>
+<td align="left">classical</td>
+</tr>
+<tr class="even">
+<td align="left">Azzolino della Ciaja or della Ciaia or della Araja</td>
+<td align="right">1671</td>
+<td align="right">1755</td>
+<td align="left">classical</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="romantic-era" class="section level1">
+<h1>Romantic era</h1>
+<pre class="r"><code># link_romantic &lt;- &quot;https://en.wikipedia.org/wiki/List_of_Romantic-era_composers&quot;
+# pg &lt;- read_html(link_romantic)
+# 
+# pg</code></pre>
+</div>
+<div id="th-century" class="section level1">
+<h1>20th century</h1>
+<pre class="r"><code># 20th century
+link_composers_20th &lt;- &quot;https://en.wikipedia.org/wiki/List_of_20th-century_classical_composers&quot;
+pg &lt;- read_html(link_composers_20th)
   
-romantic_table &lt;- pg %&gt;% 
+table_20 &lt;- pg %&gt;% 
   html_node(&quot;table.wikitable&quot;) %&gt;%
   html_table(fill = TRUE)
 
@@ -28,123 +239,162 @@ sortkeys &lt;- pg %&gt;%
   html_nodes(css = &#39;span[class=&quot;sortkey&quot;]&#39;) %&gt;% 
   html_text()
 
-romantic_composers &lt;- romantic_table %&gt;% 
-  select(Name, contains(&quot;Year&quot;)) %&gt;% 
+composers_20th &lt;- table_20 %&gt;% 
+  select(composer = Name, contains(&quot;Year&quot;)) %&gt;% 
+  rename(year_of_birth = &quot;Year of birth&quot;, 
+         year_of_death = &quot;Year of death&quot;) %&gt;% 
   mutate(sortkeys = sortkeys,
-         Name = str_replace(Name, sortkeys, &quot;&quot;)) %&gt;% 
+         composer = str_replace(composer, sortkeys, &quot;&quot;),
+         year_of_birth = parse_number(year_of_birth),
+         period = &quot;20th_century&quot;) %&gt;% 
   select(-sortkeys)
 
-romantic_composers %&gt;% 
-  head(20) %&gt;% 
-  knitr::kable()</code></pre>
+
+print_composers(composers_20th, 20)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">Name</th>
-<th align="left">Year of birth</th>
-<th align="right">Year of death</th>
+<th align="left">composer</th>
+<th align="right">year_of_birth</th>
+<th align="right">year_of_death</th>
+<th align="left">period</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Charles Dancla</td>
-<td align="left">1817</td>
+<td align="right">1817</td>
 <td align="right">1907</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Luigi Arditi</td>
-<td align="left">1822</td>
+<td align="right">1822</td>
 <td align="right">1903</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Theodor Kirchner</td>
-<td align="left">1823</td>
+<td align="right">1823</td>
 <td align="right">1903</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Carl Reinecke</td>
-<td align="left">1824</td>
+<td align="right">1824</td>
 <td align="right">1910</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Richard Hol</td>
-<td align="left">1825</td>
+<td align="right">1825</td>
 <td align="right">1904</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Ludwig Minkus</td>
-<td align="left">1826</td>
+<td align="right">1826</td>
 <td align="right">1917</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Morten Eskesen</td>
-<td align="left">1826</td>
+<td align="right">1826</td>
 <td align="right">1913</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">François-Auguste Gevaert</td>
-<td align="left">1828</td>
+<td align="right">1828</td>
 <td align="right">1908</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Clémence de Grandval</td>
-<td align="left">1828</td>
+<td align="right">1828</td>
 <td align="right">1907</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">James Cutler Dunn Parker</td>
-<td align="left">1828</td>
+<td align="right">1828</td>
 <td align="right">1916</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Jacques Blumenthal</td>
-<td align="left">1829</td>
+<td align="right">1829</td>
 <td align="right">1908</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Karl Goldmark</td>
-<td align="left">1830</td>
+<td align="right">1830</td>
 <td align="right">1915</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Karl Klindworth</td>
-<td align="left">1830</td>
+<td align="right">1830</td>
 <td align="right">1916</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Hans Bronsart von Schellendorff</td>
-<td align="left">1830</td>
+<td align="right">1830</td>
 <td align="right">1913</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Jan Gerard Palm</td>
-<td align="left">1831</td>
+<td align="right">1831</td>
 <td align="right">1906</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Benjamin Dwight Allen</td>
-<td align="left">1831</td>
+<td align="right">1831</td>
 <td align="right">1914</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Salomon Jadassohn</td>
-<td align="left">1831</td>
+<td align="right">1831</td>
 <td align="right">1902</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Joseph Joachim</td>
-<td align="left">1831</td>
+<td align="right">1831</td>
 <td align="right">1907</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="odd">
 <td align="left">Mathilde Hannah von Rothschild</td>
-<td align="left">1832</td>
+<td align="right">1832</td>
 <td align="right">1924</td>
+<td align="left">20th_century</td>
 </tr>
 <tr class="even">
 <td align="left">Charles-Wilfrid de Bériot</td>
-<td align="left">1833</td>
+<td align="right">1833</td>
 <td align="right">1914</td>
+<td align="left">20th_century</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="combine-all-composers" class="section level1">
+<h1>Combine all composers</h1>
+<pre class="r"><code>all_composers &lt;- bind_rows(
+  baroque_composers,
+  classical_composers,
+  composers_20th
+) %&gt;% 
+  distinct()</code></pre>
+<pre class="r"><code>ggplot(all_composers, aes(year_of_birth, colour = period)) +
+  geom_freqpoly(bins = 40)</code></pre>
+<pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).</code></pre>
+<p><img src="/post/2017-10-30-scraping-composers-from-wikipedia_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Somehow there are too few people around 1800. Aaaah, thats because we miss the romantic era until now.</p>
+</div>
