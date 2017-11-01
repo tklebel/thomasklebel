@@ -21,11 +21,9 @@ tags:
 library(rvest)
 
 # convenience function to print first few lines of data.frames
-print_composers &lt;- function(df, n = 10) df %&gt;% head(n) %&gt;% knitr::kable()
-
-theme_set(hrbrmisc::theme_hrbrmstr())</code></pre>
-<div id="baroque-period" class="section level1">
-<h1>Baroque period</h1>
+print_composers &lt;- function(df, n = 10) df %&gt;% head(n) %&gt;% knitr::kable()</code></pre>
+<div id="baroque-period-1600-1760" class="section level1">
+<h1>Baroque period (1600-1760)</h1>
 <p>For this period, the data is in a simple list of the following format: <code>'First name' 'Surname' ('date of birth' - 'date of death')</code>.</p>
 <pre class="r"><code>link_baroque &lt;- &quot;https://en.wikipedia.org/wiki/List_of_Baroque_composers&quot;
 pg &lt;- read_html(link_baroque)
@@ -219,22 +217,73 @@ print_composers(classical_composers)</code></pre>
 </div>
 <div id="romantic-era" class="section level1">
 <h1>Romantic era</h1>
-<pre class="r"><code># link_romantic &lt;- &quot;https://en.wikipedia.org/wiki/List_of_Romantic-era_composers&quot;
-# pg &lt;- read_html(link_romantic)
-# 
-# pg</code></pre>
+<p>For the composers of the romantic era we need a different approach, since they are stored in a html-table. Luckily the tables can be easily accessed via the css-class <code>table.wikitable</code>. We convert the content to a <code>data_frame</code> by mapping <code>html_table</code> over all five tables. In the next step I fix a problem with the date of birth of Scott Joplin.</p>
+<pre class="r"><code>link_romantic &lt;- &quot;https://en.wikipedia.org/wiki/List_of_Romantic-era_composers&quot;
+pg &lt;- read_html(link_romantic)
+
+composers_romantic &lt;- pg %&gt;% 
+  html_nodes(&quot;table.wikitable&quot;) %&gt;% 
+  map(html_table) %&gt;% 
+  map_at(5, ~mutate_at(.x,
+                       c(&quot;Date born&quot;),
+                       function(x) {str_extract(x, &quot;\\d{4}&quot;) %&gt;% parse_number()})) %&gt;%
+  bind_rows() %&gt;% 
+  mutate(period = &quot;romantic&quot;) %&gt;% 
+  rename(composer = Name,
+         year_of_birth = &quot;Date born&quot;, 
+         year_of_death = &quot;Date died&quot;)</code></pre>
 </div>
 <div id="th-century" class="section level1">
 <h1>20th century</h1>
-<pre class="r"><code># 20th century
-link_composers_20th &lt;- &quot;https://en.wikipedia.org/wiki/List_of_20th-century_classical_composers&quot;
+<p>The table for composers of the 20th century is slightly more elaborate, which complicates things for use. In order to be able to sort by surname, the table contains a sortkey (“Beethoven, Ludwig van” in case of Beethoven). When converting to a data_frame, the name of the composer ends up being “Beethoven, Ludwig vanLudwig van Beethoven”.</p>
+<pre class="r"><code>link_composers_20th &lt;- &quot;https://en.wikipedia.org/wiki/List_of_20th-century_classical_composers&quot;
 pg &lt;- read_html(link_composers_20th)
   
 table_20 &lt;- pg %&gt;% 
   html_node(&quot;table.wikitable&quot;) %&gt;%
   html_table(fill = TRUE)
 
-sortkeys &lt;- pg %&gt;% 
+print_composers(table_20, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Year of birth</th>
+<th align="right">Year of death</th>
+<th align="left">Nationality</th>
+<th align="left">Notable 20th-century works</th>
+<th align="left">Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Dancla, CharlesCharles Dancla</td>
+<td align="left">1817</td>
+<td align="right">1907</td>
+<td align="left">French</td>
+<td align="left">Solo de concours no. 7, Op. 224</td>
+<td align="left">Romanticism</td>
+</tr>
+<tr class="even">
+<td align="left">Arditi, LuigiLuigi Arditi</td>
+<td align="left">1822</td>
+<td align="right">1903</td>
+<td align="left">Italian</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Kirchner, TheodorTheodor Kirchner</td>
+<td align="left">1823</td>
+<td align="right">1903</td>
+<td align="left">German</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<p>I found no better way than to accept this, extract the sortkeys separately, and then delete the sortkeys from the column with <code>str_replace(composer, sortkeys, &quot;&quot;)</code>. If there is a better way, I would be glad if someone could point it out in the comments.</p>
+<pre class="r"><code>sortkeys &lt;- pg %&gt;% 
   html_node(&quot;table.wikitable&quot;) %&gt;%
   html_nodes(css = &#39;span[class=&quot;sortkey&quot;]&#39;) %&gt;% 
   html_text()
@@ -249,8 +298,7 @@ composers_20th &lt;- table_20 %&gt;%
          period = &quot;20th_century&quot;) %&gt;% 
   select(-sortkeys)
 
-
-print_composers(composers_20th, 20)</code></pre>
+print_composers(composers_20th)</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -321,66 +369,6 @@ print_composers(composers_20th, 20)</code></pre>
 <td align="right">1916</td>
 <td align="left">20th_century</td>
 </tr>
-<tr class="odd">
-<td align="left">Jacques Blumenthal</td>
-<td align="right">1829</td>
-<td align="right">1908</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="even">
-<td align="left">Karl Goldmark</td>
-<td align="right">1830</td>
-<td align="right">1915</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="odd">
-<td align="left">Karl Klindworth</td>
-<td align="right">1830</td>
-<td align="right">1916</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="even">
-<td align="left">Hans Bronsart von Schellendorff</td>
-<td align="right">1830</td>
-<td align="right">1913</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="odd">
-<td align="left">Jan Gerard Palm</td>
-<td align="right">1831</td>
-<td align="right">1906</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="even">
-<td align="left">Benjamin Dwight Allen</td>
-<td align="right">1831</td>
-<td align="right">1914</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="odd">
-<td align="left">Salomon Jadassohn</td>
-<td align="right">1831</td>
-<td align="right">1902</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="even">
-<td align="left">Joseph Joachim</td>
-<td align="right">1831</td>
-<td align="right">1907</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="odd">
-<td align="left">Mathilde Hannah von Rothschild</td>
-<td align="right">1832</td>
-<td align="right">1924</td>
-<td align="left">20th_century</td>
-</tr>
-<tr class="even">
-<td align="left">Charles-Wilfrid de Bériot</td>
-<td align="right">1833</td>
-<td align="right">1914</td>
-<td align="left">20th_century</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -389,12 +377,24 @@ print_composers(composers_20th, 20)</code></pre>
 <pre class="r"><code>all_composers &lt;- bind_rows(
   baroque_composers,
   classical_composers,
+  composers_romantic,
   composers_20th
-) %&gt;% 
-  distinct()</code></pre>
-<pre class="r"><code>ggplot(all_composers, aes(year_of_birth, colour = period)) +
-  geom_freqpoly(bins = 40)</code></pre>
+) </code></pre>
+<p>Until now this post consits only of code and tables, so lets use our newly gathered data and create a nice graph. Since some composers are listed for two periods, because they lived during their transition, we should remove these “duplicates”.</p>
+<pre class="r"><code>all_composers %&gt;% 
+  distinct(composer, year_of_birth, year_of_death) %&gt;%
+  ggplot(aes(year_of_birth)) +
+  geom_freqpoly(bins = 40) +
+  hrbrmisc::theme_hrbrmstr() +
+  labs(x = &quot;Year of birth&quot;, y = &quot;# of composers&quot;,
+       title = &quot;Birth-years for classical composers\nlisted on wikipedia&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="/post/2017-10-30-scraping-composers-from-wikipedia_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>Somehow there are too few people around 1800. Aaaah, thats because we miss the romantic era until now.</p>
+<p><img src="/post/2017-10-30-scraping-composers-from-wikipedia_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="still-to-do" class="section level1">
+<h1>Still to do</h1>
+<ul>
+<li>Add dates for periods, some explanation which composers are associated with borders of periods.</li>
+<li>Think and write about interpretation of graph.</li>
+</ul>
 </div>

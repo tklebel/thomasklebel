@@ -32,12 +32,10 @@ library(rvest)
 
 # convenience function to print first few lines of data.frames
 print_composers <- function(df, n = 10) df %>% head(n) %>% knitr::kable()
-
-theme_set(hrbrmisc::theme_hrbrmstr())
 ```
 
 
-# Baroque period
+# Baroque period (1600-1760)
 For this period, the data is in a simple list of the following format:
 `'First name' 'Surname' ('date of birth' - 'date of death')`. 
 
@@ -108,24 +106,53 @@ print_composers(classical_composers)
 
 
 # Romantic era
-```{r}
-# link_romantic <- "https://en.wikipedia.org/wiki/List_of_Romantic-era_composers"
-# pg <- read_html(link_romantic)
-# 
-# pg
+For the composers of the romantic era we need a different approach, since they
+are stored in a html-table. Luckily the tables can be easily accessed via the
+css-class `table.wikitable`. We convert the content to a `data_frame` by mapping
+`html_table` over all five tables. In the next step I fix a problem with the
+date of birth of Scott Joplin.
 
+```{r}
+link_romantic <- "https://en.wikipedia.org/wiki/List_of_Romantic-era_composers"
+pg <- read_html(link_romantic)
+
+composers_romantic <- pg %>% 
+  html_nodes("table.wikitable") %>% 
+  map(html_table) %>% 
+  map_at(5, ~mutate_at(.x,
+                       c("Date born"),
+                       function(x) {str_extract(x, "\\d{4}") %>% parse_number()})) %>%
+  bind_rows() %>% 
+  mutate(period = "romantic") %>% 
+  rename(composer = Name,
+         year_of_birth = "Date born", 
+         year_of_death = "Date died")
 ```
 
 # 20th century
+The table for composers of the 20th century is slightly more elaborate, which 
+complicates things for use. In order to be able to sort by surname, the table
+contains a sortkey ("Beethoven, Ludwig van" in case of Beethoven). When 
+converting to a data_frame, the name of the composer ends up being 
+"Beethoven, Ludwig vanLudwig van Beethoven". 
 
 ```{r}
-# 20th century
 link_composers_20th <- "https://en.wikipedia.org/wiki/List_of_20th-century_classical_composers"
 pg <- read_html(link_composers_20th)
   
 table_20 <- pg %>% 
   html_node("table.wikitable") %>%
   html_table(fill = TRUE)
+
+print_composers(table_20, 3)
+```
+
+I found no better way than to accept this, extract the sortkeys separately, and
+then delete the sortkeys from the column with
+`str_replace(composer, sortkeys, "")`. If there is a better way, I would be glad
+if someone could point it out in the comments.
+
+```{r}
 
 sortkeys <- pg %>% 
   html_node("table.wikitable") %>%
@@ -142,8 +169,7 @@ composers_20th <- table_20 %>%
          period = "20th_century") %>% 
   select(-sortkeys)
 
-
-print_composers(composers_20th, 20)
+print_composers(composers_20th)
 ```
 
 
@@ -152,18 +178,30 @@ print_composers(composers_20th, 20)
 all_composers <- bind_rows(
   baroque_composers,
   classical_composers,
+  composers_romantic,
   composers_20th
-) %>% 
-  distinct()
+) 
 ```
 
-
+Until now this post consits only of code and tables, so lets use our newly
+gathered data and create a nice graph. Since some composers are listed for two
+periods, because they lived during their transition, we should remove these
+"duplicates".
 
 ```{r}
-ggplot(all_composers, aes(year_of_birth, colour = period)) +
-  geom_freqpoly(bins = 40)
+all_composers %>% 
+  distinct(composer, year_of_birth, year_of_death) %>%
+  ggplot(aes(year_of_birth)) +
+  geom_freqpoly(bins = 40) +
+  hrbrmisc::theme_hrbrmstr() +
+  labs(x = "Year of birth", y = "# of composers",
+       title = "Birth-years for classical composers\nlisted on wikipedia")
 ```
 
-Somehow there are too few people around 1800. Aaaah, thats because we miss the 
-romantic era until now.
+
+
+# Still to do
+- Add dates for periods, some explanation which composers are associated with
+borders of periods.
+- Think and write about interpretation of graph.
 
