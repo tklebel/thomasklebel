@@ -1,0 +1,176 @@
+---
+title: Waiting for Summer
+author: Thomas Klebel
+date: '2018-02-11'
+slug: waiting-for-summer
+categories: []
+tags: [R, lazy sunday]
+header:
+  caption: ''
+  image: ''
+---
+
+
+
+<p>Being home on a sunday afternoon has many positive aspects, one of which today was to wittness the suns rays floating into the rooms. After short and dark days of winter, the day I realise the sun is once again shines directly in my rooms, I am always very happy.</p>
+<div class="figure">
+<img src="/img/light.jpg" />
+
+</div>
+<p>Every time I think about the times for sunrise and sundown, I check back at the <a href="https://www.zamg.ac.at/cms/de/klima/klimauebersichten/ephemeriden">Austrian Institute for Meterology and Geodynamic (ZAMG)</a> to see, how fast days are getting longer. I will use this opportunity to visualise the patterns of sunrise and sunset for my town, and compare it to my wife’s hometown.</p>
+<div id="get-the-data" class="section level1">
+<h1>Get the data</h1>
+<p>First, we need to load some packages. Since I want to scrape the times for sunrise and sunset from the page of ZAMG, we need to load <code>rvest</code> alongside the usual <code>tidyverse</code>.</p>
+<pre class="r"><code>library(rvest)
+library(tidyverse)
+library(lubridate)
+
+theme_set(hrbrthemes::theme_ipsum(base_family = &quot;Hind&quot;))</code></pre>
+<p>Before we scrape, we need to check, whether we are allowed to, or not.</p>
+<pre class="r"><code>link &lt;- &quot;https://www.zamg.ac.at/cms/de/klima/klimauebersichten/ephemeriden/graz/?jahr=2018&quot;
+
+robotstxt::paths_allowed(link)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Seems to be ok.</p>
+<pre class="r"><code>page &lt;- read_html(link)
+
+times &lt;- page %&gt;% 
+  html_node(&quot;.dynPageTable&quot;) %&gt;%
+  html_table() %&gt;% 
+  set_names(c(&quot;day&quot;, &quot;month&quot;, &quot;year&quot;, &quot;sunrise&quot;, &quot;sunset&quot;,
+              &quot;moonrise&quot;, &quot;moonset&quot;)) %&gt;% 
+  as_tibble()
+times</code></pre>
+<pre><code>## # A tibble: 365 x 7
+##      day month   year sunrise sunset moonrise moonset
+##    &lt;dbl&gt; &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  
+##  1  1.00 Jänner  2018 07:44   16:19  16:01    06:37  
+##  2  2.00 Jänner  2018 07:44   16:20  17:06    07:43  
+##  3  3.00 Jänner  2018 07:44   16:21  18:18    08:39  
+##  4  4.00 Jänner  2018 07:44   16:22  19:33    09:27  
+##  5  5.00 Jänner  2018 07:44   16:23  20:48    10:05  
+##  6  6.00 Jänner  2018 07:44   16:25  22:00    10:38  
+##  7  7.00 Jänner  2018 07:44   16:26  23:10    11:08  
+##  8  8.00 Jänner  2018 07:43   16:27  ----     11:35  
+##  9  9.00 Jänner  2018 07:43   16:28  00:16    12:00  
+## 10 10.0  Jänner  2018 07:43   16:29  01:21    12:26  
+## # ... with 355 more rows</code></pre>
+</div>
+<div id="clean-the-data" class="section level1">
+<h1>Clean the data</h1>
+<pre class="r"><code>sun_times &lt;- times %&gt;% 
+  mutate(date = paste(year, month, day, sep = &quot;-&quot;) %&gt;% ymd()) %&gt;% 
+  gather(type, time, sunrise, sunset) %&gt;% 
+  select(date, type, time) %&gt;% 
+  mutate(time = paste0(today(), &quot;-&quot;, time) %&gt;% ymd_hm())</code></pre>
+</div>
+<div id="plot-the-data" class="section level1">
+<h1>Plot the data</h1>
+<pre class="r"><code>labels &lt;- tribble(~date,             ~type,     ~time,
+                  ymd(&quot;2018-07-01&quot;), &quot;sunrise&quot;, ymd_hm(&quot;2018-02-11-07:00&quot;),
+                  ymd(&quot;2018-07-01&quot;), &quot;sunset&quot;, ymd_hm(&quot;2018-02-11-19:00&quot;))
+
+ggplot(sun_times, aes(date, time, colour = type)) +
+  geom_line(show.legend = F) +
+  scale_y_datetime(date_breaks = &quot;2 hours&quot;, date_labels = &quot;%H:%M&quot;) +
+  geom_vline(xintercept = today()) +
+  geom_text(data = labels, aes(label = type), show.legend = F) +
+  labs(x = NULL, y = NULL, title = &quot;Sunset and sunrise in Graz (Austria)&quot;)</code></pre>
+<p><img src="/post/2018-02-11-waiting-for-summer_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="compare-with-belgrade" class="section level1">
+<h1>Compare with Belgrade</h1>
+<p><a href="https://learnr.wordpress.com/2010/02/25/ggplot2-plotting-dates-hours-and-minutes/" class="uri">https://learnr.wordpress.com/2010/02/25/ggplot2-plotting-dates-hours-and-minutes/</a></p>
+<pre class="r"><code>library(maptools)</code></pre>
+<pre><code>## Lade nötiges Paket: sp</code></pre>
+<pre><code>## Checking rgeos availability: FALSE
+##      Note: when rgeos is not available, polygon geometry     computations in maptools depend on gpclib,
+##      which has a restricted licence. It is disabled by default;
+##      to enable gpclib, type gpclibPermit()</code></pre>
+<pre class="r"><code>library(ggmap)</code></pre>
+<pre class="r"><code>get_sun_noaa &lt;- function(city, direction = &quot;sunrise&quot;) {
+  x_seq &lt;- seq(from = as.POSIXct(&quot;2018-01-01&quot;, tz = &quot;CET&quot;),
+     length.out = 365, by = &quot;days&quot;)
+  loc &lt;- matrix(geocode(city, source = &quot;dsk&quot;) %&gt;% as.numeric(), nrow = 1)
+  sunrise &lt;- sunriset(loc, x_seq, direction = direction,
+     POSIXct.out = TRUE)
+
+  sunrise %&gt;% 
+    mutate(date = time,
+           type = direction,
+           time = format(date, format = &quot;%H:%M:%S&quot;),
+           time = as.POSIXct(time, format = &quot;%H:%M:%S&quot;),
+           city = city) %&gt;% 
+    select(date, time, type, city)
+}
+
+
+combined &lt;- bind_rows(get_sun_noaa(&quot;Graz&quot;), get_sun_noaa(&quot;Graz&quot;, &quot;sunset&quot;),
+          get_sun_noaa(&quot;Belgrade&quot;), get_sun_noaa(&quot;Belgrade&quot;, &quot;sunset&quot;)) %&gt;% 
+  as_tibble()</code></pre>
+<pre><code>## Information from URL : http://www.datasciencetoolkit.org/maps/api/geocode/json?address=Graz&amp;sensor=false</code></pre>
+<pre><code>## Information from URL : http://www.datasciencetoolkit.org/maps/api/geocode/json?address=Belgrade&amp;sensor=false</code></pre>
+<p>calculate daily hours of sun.</p>
+<pre class="r"><code>day_lengths &lt;- combined %&gt;% 
+  mutate(date = date(date)) %&gt;% 
+  spread(type, time) %&gt;% 
+  mutate(day_length = sunset - sunrise)
+
+day_lengths</code></pre>
+<pre><code>## # A tibble: 730 x 5
+##    date       city     sunrise             sunset              day_length 
+##    &lt;date&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;dttm&gt;              &lt;time&gt;     
+##  1 2018-01-01 Belgrade 2018-02-11 07:15:43 2018-02-11 16:07:46 8.8675     
+##  2 2018-01-01 Graz     2018-02-11 07:44:17 2018-02-11 16:19:21 8.58444444…
+##  3 2018-01-02 Belgrade 2018-02-11 07:15:44 2018-02-11 16:08:41 8.8825     
+##  4 2018-01-02 Graz     2018-02-11 07:44:16 2018-02-11 16:20:19 8.60083333…
+##  5 2018-01-03 Belgrade 2018-02-11 07:15:44 2018-02-11 16:09:38 8.89833333…
+##  6 2018-01-03 Graz     2018-02-11 07:44:12 2018-02-11 16:21:19 8.61861111…
+##  7 2018-01-04 Belgrade 2018-02-11 07:15:41 2018-02-11 16:10:37 8.91555555…
+##  8 2018-01-04 Graz     2018-02-11 07:44:06 2018-02-11 16:22:21 8.6375     
+##  9 2018-01-05 Belgrade 2018-02-11 07:15:35 2018-02-11 16:11:38 8.93416666…
+## 10 2018-01-05 Graz     2018-02-11 07:43:57 2018-02-11 16:23:24 8.6575     
+## # ... with 720 more rows</code></pre>
+<pre class="r"><code>ggplot(day_lengths, aes(date, day_length, colour = city)) +
+  geom_line() +
+  scale_color_brewer(palette = &quot;Set1&quot;) +
+  scale_y_continuous(breaks = scales::pretty_breaks(7)) +
+  labs(x = NULL, y = &quot;Length of day [hours]&quot;, title = &quot;Length of days&quot;,
+       colour = NULL) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="/post/2018-02-11-waiting-for-summer_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>day_difference &lt;- day_lengths %&gt;% 
+  select(date, city, day_length) %&gt;% 
+  spread(city, day_length) %&gt;% 
+  mutate(difference = Graz - Belgrade)
+day_difference</code></pre>
+<pre><code>## # A tibble: 365 x 4
+##    date       Belgrade         Graz             difference        
+##    &lt;date&gt;     &lt;time&gt;           &lt;time&gt;           &lt;time&gt;            
+##  1 2018-01-01 8.8675           8.58444444444445 -0.283055555555555
+##  2 2018-01-02 8.8825           8.60083333333333 -0.281666666666666
+##  3 2018-01-03 8.89833333333333 8.61861111111111 -0.279722222222222
+##  4 2018-01-04 8.91555555555555 8.6375           -0.278055555555556
+##  5 2018-01-05 8.93416666666667 8.6575           -0.276666666666666
+##  6 2018-01-06 8.95388888888889 8.67916666666667 -0.274722222222222
+##  7 2018-01-07 8.97472222222222 8.70222222222222 -0.272500000000001
+##  8 2018-01-08 8.99638888888889 8.72666666666667 -0.269722222222223
+##  9 2018-01-09 9.01972222222222 8.75194444444444 -0.267777777777779
+## 10 2018-01-10 9.04388888888889 8.77861111111111 -0.265277777777778
+## # ... with 355 more rows</code></pre>
+<pre class="r"><code>ggplot(day_difference, aes(date, difference)) +
+  geom_area(data = filter(day_difference, difference &gt;= 0), fill = &quot;#377EB8&quot;) +
+  geom_area(data = filter(day_difference, difference &lt; 0), fill = &quot;#E41A1C&quot;) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) x * 60) +
+  geom_hline(yintercept = 0) +
+  annotate(&quot;text&quot;, x = ymd(&quot;2018-06-20&quot;), y = .15,
+           label = &quot;Longer days in Graz&quot;, colour = &quot;white&quot;) +
+  annotate(&quot;text&quot;, x = ymd(&quot;2018-02-01&quot;), y = -.05,
+           label = &quot;Shorter days&quot;, colour = &quot;white&quot;) +
+  annotate(&quot;text&quot;, x = ymd(&quot;2018-12-01&quot;), y = -.05,
+           label = &quot;in Graz&quot;, colour = &quot;white&quot;) +
+  labs(y = &quot;difference in minutes&quot;, title = &quot;Day lengths in Graz and Belgrade&quot;,
+       x = NULL)</code></pre>
+<p><img src="/post/2018-02-11-waiting-for-summer_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
