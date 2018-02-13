@@ -3,7 +3,7 @@ title: Scraping Composers from Wikipedia
 author: Thomas Klebel
 date: '2017-10-30'
 slug: scraping-composers-from-wikipedia
-draft: false
+draft: true
 categories:
   - Coding
 tags:
@@ -177,7 +177,8 @@ all_composers <- bind_rows(
   classical_composers,
   composers_romantic,
   composers_20th
-) 
+) %>% 
+  select(composer, year_of_birth, year_of_death)
 ```
 
 Until now this post consits only of code and tables, so lets use our newly
@@ -193,6 +194,12 @@ all_composers %>%
   hrbrmisc::theme_hrbrmstr() +
   labs(x = "Year of birth", y = "# of composers",
        title = "Birth-years for classical composers\nlisted on wikipedia")
+```
+
+```{r, include=FALSE}
+all_composers %>% 
+  mutate(year_of_death = trimws(year_of_death)) %>% 
+  write_csv("2017-11_composer_metadata.csv")
 ```
 
 

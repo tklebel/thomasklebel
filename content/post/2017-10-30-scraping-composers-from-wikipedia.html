@@ -3,7 +3,7 @@ title: Scraping Composers from Wikipedia
 author: Thomas Klebel
 date: '2017-10-30'
 slug: scraping-composers-from-wikipedia
-draft: false
+draft: true
 categories:
   - Coding
 tags:
@@ -343,7 +343,8 @@ print_composers(composers_20th)</code></pre>
   classical_composers,
   composers_romantic,
   composers_20th
-) </code></pre>
+) %&gt;% 
+  select(composer, year_of_birth, year_of_death)</code></pre>
 <p>Until now this post consits only of code and tables, so lets use our newly gathered data and create a nice graph. Since some composers are listed for two periods, because they lived during their transition, we should remove these “duplicates”.</p>
 <pre class="r"><code>all_composers %&gt;% 
   distinct(composer, year_of_birth, year_of_death) %&gt;%
