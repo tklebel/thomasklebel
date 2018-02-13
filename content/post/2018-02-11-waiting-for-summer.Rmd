@@ -1,7 +1,7 @@
 ---
 title: Waiting for Summer
 author: Thomas Klebel
-date: '2018-02-11'
+date: '2018-02-13'
 slug: waiting-for-summer
 categories: []
 tags: [R, lazy sunday]
@@ -10,19 +10,22 @@ header:
   image: ''
 ---
 
-Being home on a sunday afternoon has many positive aspects, one of which today
-was to wittness the suns rays floating into the rooms. After short and dark days
-of winter, the day I realise the sun is once again shines directly in my rooms,
+Being home on a Sunday afternoon has many positive aspects, one of which a few
+days ago
+was to witness the sun's rays floating into the rooms. After rather short and
+grey days
+of winter, the day I realise the sun is once again shining directly in my rooms,
 I am always very happy.
 
 ![](/img/light.jpg)
 
-Every time I think about the times for sunrise and sundown, I check back 
+Every now and then I think about the times for sunrise and sundown, 
+which I usually look up
 at the
 [Austrian Institute for Meterology and Geodynamic (ZAMG)](https://www.zamg.ac.at/cms/de/klima/klimauebersichten/ephemeriden)
 to see, how fast days are getting longer. I will use this opportunity
-to visualise the patterns of sunrise and sunset for my town, and compare it to
-my wife's hometown.
+to visualise the patterns of sunrise and sunset for my current hometown, which
+is Graz in the south of Austria.
 
 # Get the data
 First, we need to load some packages. Since I want to scrape the times for
@@ -45,8 +48,14 @@ link <- "https://www.zamg.ac.at/cms/de/klima/klimauebersichten/ephemeriden/graz/
 
 robotstxt::paths_allowed(link)
 ```
-Seems to be ok.
+Seems to be OK.
 
+After that, we go ahead to scrape the table of sunrise and sunset times.
+In order to find the appropriate tag for `html_node()`, I always use
+[selectorgadget](http://selectorgadget.com). Luckily the table
+is quite accessible, we simply need to select one node and extract the table.
+Since the column headings are duplicated and `tibble`s don't like this, I set
+appropriate columns manually.
 
 ```{r}
 page <- read_html(link)
@@ -61,107 +70,87 @@ times
 ```
 
 
-# Clean the data
+The table looks OK, but in order to do some plotting, we need to combine the 
+information on day, month and year into one column. 
 ```{r}
 sun_times <- times %>% 
-  mutate(date = paste(year, month, day, sep = "-") %>% ymd()) %>% 
-  gather(type, time, sunrise, sunset) %>% 
-  select(date, type, time) %>% 
-  mutate(time = paste0(today(), "-", time) %>% ymd_hm())
+  mutate(date = paste(year, month, day, sep = "-") %>% ymd()) 
+sun_times
 ```
+
 
 
 # Plot the data
+For this data I want to have the date from first of January to 31st of December
+on the x-axis, and the times of day when the sun rises and sets on the y-axis.
+For this, we need to gather our data, and then create a slightly hacky time
+variable. Since there is no class for time without date, I combine the
+information on sunset and sunrise times with today's date.
+
+```{r}
+gathered_times <- sun_times %>% 
+  gather(type, time, sunrise, sunset) %>% 
+  select(date, type, time) %>% 
+  mutate(time = paste0(today(), "-", time) %>% ymd_hm())
+gathered_times
+```
+
+```{r}
+ggplot(gathered_times, aes(date, time, colour = type)) +
+  geom_line() +
+  scale_y_datetime(date_breaks = "2 hours", date_labels = "%H:%M") +
+  labs(x = NULL, y = NULL, title = "Sunset and sunrise in Graz (Austria)")
+```
+This already looks quite nice. We can clearly see the jumps in sunrise and sunset
+times that stem from daylight-saving. 
+
+
+For the final graph to look a bit prettier, I would like to add a few
+annotations:
+
+1. get rid of the legend and annotate inside the plot
+2. show a vertical line of today, with today's length of day.
+
+Let's prepare those annotations:
 ```{r}
 labels <- tribble(~date,             ~type,     ~time,
-                  ymd("2018-07-01"), "sunrise", ymd_hm("2018-02-11-07:00"),
-                  ymd("2018-07-01"), "sunset", ymd_hm("2018-02-11-19:00"))
+                  ymd("2018-07-01"), "sunrise", ymd_hm("2018-02-13-07:00"),
+                  ymd("2018-07-01"), "sunset",  ymd_hm("2018-02-13-19:00"))
 
-ggplot(sun_times, aes(date, time, colour = type)) +
+
+# calculate todays length of day
+day_length <- gathered_times %>% 
+  filter(date == today()) %>% 
+  spread(type, time) %>% 
+  mutate(day_length = sunset - sunrise) %>% 
+  pull(day_length) %>% 
+  round(2) %>% 
+  as.character()
+
+
+
+```
+
+And let's plot the graph.
+```{r}
+ggplot(gathered_times, aes(date, time, colour = type)) +
   geom_line(show.legend = F) +
   scale_y_datetime(date_breaks = "2 hours", date_labels = "%H:%M") +
-  geom_vline(xintercept = today()) +
+  scale_color_brewer(palette = "Set1") +
+  geom_vline(xintercept = today(), colour = "#4DAF4A") +
   geom_text(data = labels, aes(label = type), show.legend = F) +
+  annotate("text", x = today() + 85, y = ymd_hm(paste(today(), "12:30", sep = "-")),
+           label = paste0("Today's length of day: ", day_length, " hours."),
+           colour = "#4DAF4A") +
   labs(x = NULL, y = NULL, title = "Sunset and sunrise in Graz (Austria)")
 ```
 
-# Compare with Belgrade
-https://learnr.wordpress.com/2010/02/25/ggplot2-plotting-dates-hours-and-minutes/
-
-```{r, warning=FALSE}
-library(maptools)
-library(ggmap)
-```
-
-```{r}
-get_sun_noaa <- function(city, direction = "sunrise") {
-  x_seq <- seq(from = as.POSIXct("2018-01-01", tz = "CET"),
-     length.out = 365, by = "days")
-  loc <- matrix(geocode(city, source = "dsk") %>% as.numeric(), nrow = 1)
-  sunrise <- sunriset(loc, x_seq, direction = direction,
-     POSIXct.out = TRUE)
-
-  sunrise %>% 
-    mutate(date = time,
-           type = direction,
-           time = format(date, format = "%H:%M:%S"),
-           time = as.POSIXct(time, format = "%H:%M:%S"),
-           city = city) %>% 
-    select(date, time, type, city)
-}
-
-
-combined <- bind_rows(get_sun_noaa("Graz"), get_sun_noaa("Graz", "sunset"),
-          get_sun_noaa("Belgrade"), get_sun_noaa("Belgrade", "sunset")) %>% 
-  as_tibble()
-
-```
-
-calculate daily hours of sun.
-
-```{r}
-day_lengths <- combined %>% 
-  mutate(date = date(date)) %>% 
-  spread(type, time) %>% 
-  mutate(day_length = sunset - sunrise)
-
-day_lengths
-```
-
-
-```{r}
-ggplot(day_lengths, aes(date, day_length, colour = city)) +
-  geom_line() +
-  scale_color_brewer(palette = "Set1") +
-  scale_y_continuous(breaks = scales::pretty_breaks(7)) +
-  labs(x = NULL, y = "Length of day [hours]", title = "Length of days",
-       colour = NULL) +
-  theme(legend.position = "bottom")
-```
-
-
-```{r}
-day_difference <- day_lengths %>% 
-  select(date, city, day_length) %>% 
-  spread(city, day_length) %>% 
-  mutate(difference = Graz - Belgrade)
-day_difference
-```
-
-```{r}
-ggplot(day_difference, aes(date, difference)) +
-  geom_area(data = filter(day_difference, difference >= 0), fill = "#377EB8") +
-  geom_area(data = filter(day_difference, difference < 0), fill = "#E41A1C") +
-  geom_line() +
-  scale_y_continuous(labels = function(x) x * 60) +
-  geom_hline(yintercept = 0) +
-  annotate("text", x = ymd("2018-06-20"), y = .15,
-           label = "Longer days in Graz", colour = "white") +
-  annotate("text", x = ymd("2018-02-01"), y = -.05,
-           label = "Shorter days", colour = "white") +
-  annotate("text", x = ymd("2018-12-01"), y = -.05,
-           label = "in Graz", colour = "white") +
-  labs(y = "difference in minutes", title = "Day lengths in Graz and Belgrade",
-       x = NULL)
-```
+Ten hours and ~14 minutes (0.23*60) of possible daylight is not that much, but
+not bad either. In order to have better chances of having sunlight in my face, 
+however, I
+should probably be getting up earlier, so I can walk back home from university
+before the sun has set. `r emo::ji("sunrise")`
+Maybe this will finally change my habits for when to get
+up, although I doubt it a bit
+`r emo::ji("man_shrugging_medium_light_skin_tone")`.
 
