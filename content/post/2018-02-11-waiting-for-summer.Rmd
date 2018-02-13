@@ -145,7 +145,7 @@ ggplot(gathered_times, aes(date, time, colour = type)) +
   labs(x = NULL, y = NULL, title = "Sunset and sunrise in Graz (Austria)")
 ```
 
-Ten hours and ~14 minutes (0.23*60) of possible daylight is not that much, but
+Ten hours and ~14 minutes `(0.23 * 60 = 13.8)` of possible daylight is not that much, but
 not bad either. In order to have better chances of having sunlight in my face, 
 however, I
 should probably be getting up earlier, so I can walk back home from university
