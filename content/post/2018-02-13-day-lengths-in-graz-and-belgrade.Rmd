@@ -1,0 +1,93 @@
+---
+title: Day lengths in Graz and Belgrade
+author: Thomas Klebel
+date: '2018-02-13'
+slug: day-lengths-in-graz-and-belgrade
+draft: true
+categories: []
+tags: []
+---
+
+# Compare with Belgrade
+https://learnr.wordpress.com/2010/02/25/ggplot2-plotting-dates-hours-and-minutes/
+
+```{r, warning=FALSE}
+library(maptools)
+library(ggmap)
+library(tidyverse)
+library(lubridate)
+
+theme_set(hrbrthemes::theme_ipsum(base_family = "Hind"))
+```
+
+```{r}
+get_sun_noaa <- function(city, direction = "sunrise") {
+  x_seq <- seq(from = as.POSIXct("2018-01-01", tz = "CET"),
+     length.out = 365, by = "days")
+  loc <- matrix(geocode(city, source = "dsk") %>% as.numeric(), nrow = 1)
+  sunrise <- sunriset(loc, x_seq, direction = direction,
+     POSIXct.out = TRUE)
+
+  sunrise %>% 
+    mutate(date = time,
+           type = direction,
+           time = format(date, format = "%H:%M:%S"),
+           time = as.POSIXct(time, format = "%H:%M:%S"),
+           city = city) %>% 
+    select(date, time, type, city)
+}
+
+
+combined <- bind_rows(get_sun_noaa("Graz"), get_sun_noaa("Graz", "sunset"),
+          get_sun_noaa("Belgrade"), get_sun_noaa("Belgrade", "sunset")) %>% 
+  as_tibble()
+
+```
+
+calculate daily hours of sun.
+
+```{r}
+day_lengths <- combined %>% 
+  mutate(date = date(date)) %>% 
+  spread(type, time) %>% 
+  mutate(day_length = sunset - sunrise)
+
+day_lengths
+```
+
+
+```{r}
+ggplot(day_lengths, aes(date, day_length, colour = city)) +
+  geom_line() +
+  scale_color_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = scales::pretty_breaks(7)) +
+  labs(x = NULL, y = "Length of day [hours]", title = "Length of days",
+       colour = NULL) +
+  theme(legend.position = "bottom")
+```
+
+
+```{r}
+day_difference <- day_lengths %>% 
+  select(date, city, day_length) %>% 
+  spread(city, day_length) %>% 
+  mutate(difference = Graz - Belgrade)
+day_difference
+```
+
+```{r}
+ggplot(day_difference, aes(date, difference)) +
+  geom_area(data = filter(day_difference, difference >= 0), fill = "#377EB8") +
+  geom_area(data = filter(day_difference, difference < 0), fill = "#E41A1C") +
+  geom_line() +
+  scale_y_continuous(labels = function(x) x * 60) +
+  geom_hline(yintercept = 0) +
+  annotate("text", x = ymd("2018-06-20"), y = .15,
+           label = "Longer days in Graz", colour = "white") +
+  annotate("text", x = ymd("2018-02-01"), y = -.05,
+           label = "Shorter days", colour = "white") +
+  annotate("text", x = ymd("2018-12-01"), y = -.05,
+           label = "in Graz", colour = "white") +
+  labs(y = "difference in minutes", title = "Day lengths in Graz and Belgrade",
+       x = NULL)
+```

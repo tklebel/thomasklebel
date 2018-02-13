@@ -1,0 +1,125 @@
+---
+title: Day lengths in Graz and Belgrade
+author: Thomas Klebel
+date: '2018-02-13'
+slug: day-lengths-in-graz-and-belgrade
+draft: true
+categories: []
+tags: []
+---
+
+
+
+<div id="compare-with-belgrade" class="section level1">
+<h1>Compare with Belgrade</h1>
+<p><a href="https://learnr.wordpress.com/2010/02/25/ggplot2-plotting-dates-hours-and-minutes/" class="uri">https://learnr.wordpress.com/2010/02/25/ggplot2-plotting-dates-hours-and-minutes/</a></p>
+<pre class="r"><code>library(maptools)</code></pre>
+<pre><code>## Lade nötiges Paket: sp</code></pre>
+<pre><code>## Checking rgeos availability: FALSE
+##      Note: when rgeos is not available, polygon geometry     computations in maptools depend on gpclib,
+##      which has a restricted licence. It is disabled by default;
+##      to enable gpclib, type gpclibPermit()</code></pre>
+<pre class="r"><code>library(ggmap)</code></pre>
+<pre><code>## Lade nötiges Paket: ggplot2</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.4
+## ✔ tidyr   0.7.2     ✔ dplyr   0.7.4
+## ✔ readr   1.1.1     ✔ stringr 1.2.0
+## ✔ tibble  1.4.2     ✔ forcats 0.2.0</code></pre>
+<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(lubridate)</code></pre>
+<pre><code>## 
+## Attache Paket: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     date</code></pre>
+<pre class="r"><code>theme_set(hrbrthemes::theme_ipsum(base_family = &quot;Hind&quot;))</code></pre>
+<pre class="r"><code>get_sun_noaa &lt;- function(city, direction = &quot;sunrise&quot;) {
+  x_seq &lt;- seq(from = as.POSIXct(&quot;2018-01-01&quot;, tz = &quot;CET&quot;),
+     length.out = 365, by = &quot;days&quot;)
+  loc &lt;- matrix(geocode(city, source = &quot;dsk&quot;) %&gt;% as.numeric(), nrow = 1)
+  sunrise &lt;- sunriset(loc, x_seq, direction = direction,
+     POSIXct.out = TRUE)
+
+  sunrise %&gt;% 
+    mutate(date = time,
+           type = direction,
+           time = format(date, format = &quot;%H:%M:%S&quot;),
+           time = as.POSIXct(time, format = &quot;%H:%M:%S&quot;),
+           city = city) %&gt;% 
+    select(date, time, type, city)
+}
+
+
+combined &lt;- bind_rows(get_sun_noaa(&quot;Graz&quot;), get_sun_noaa(&quot;Graz&quot;, &quot;sunset&quot;),
+          get_sun_noaa(&quot;Belgrade&quot;), get_sun_noaa(&quot;Belgrade&quot;, &quot;sunset&quot;)) %&gt;% 
+  as_tibble()</code></pre>
+<pre><code>## Information from URL : http://www.datasciencetoolkit.org/maps/api/geocode/json?address=Graz&amp;sensor=false</code></pre>
+<pre><code>## Information from URL : http://www.datasciencetoolkit.org/maps/api/geocode/json?address=Belgrade&amp;sensor=false</code></pre>
+<p>calculate daily hours of sun.</p>
+<pre class="r"><code>day_lengths &lt;- combined %&gt;% 
+  mutate(date = date(date)) %&gt;% 
+  spread(type, time) %&gt;% 
+  mutate(day_length = sunset - sunrise)
+
+day_lengths</code></pre>
+<pre><code>## # A tibble: 730 x 5
+##    date       city     sunrise             sunset              day_length 
+##    &lt;date&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;dttm&gt;              &lt;time&gt;     
+##  1 2018-01-01 Belgrade 2018-02-13 07:15:43 2018-02-13 16:07:46 8.8675     
+##  2 2018-01-01 Graz     2018-02-13 07:44:17 2018-02-13 16:19:21 8.58444444…
+##  3 2018-01-02 Belgrade 2018-02-13 07:15:44 2018-02-13 16:08:41 8.8825     
+##  4 2018-01-02 Graz     2018-02-13 07:44:16 2018-02-13 16:20:19 8.60083333…
+##  5 2018-01-03 Belgrade 2018-02-13 07:15:44 2018-02-13 16:09:38 8.89833333…
+##  6 2018-01-03 Graz     2018-02-13 07:44:12 2018-02-13 16:21:19 8.61861111…
+##  7 2018-01-04 Belgrade 2018-02-13 07:15:41 2018-02-13 16:10:37 8.91555555…
+##  8 2018-01-04 Graz     2018-02-13 07:44:06 2018-02-13 16:22:21 8.6375     
+##  9 2018-01-05 Belgrade 2018-02-13 07:15:35 2018-02-13 16:11:38 8.93416666…
+## 10 2018-01-05 Graz     2018-02-13 07:43:57 2018-02-13 16:23:24 8.6575     
+## # ... with 720 more rows</code></pre>
+<pre class="r"><code>ggplot(day_lengths, aes(date, day_length, colour = city)) +
+  geom_line() +
+  scale_color_brewer(palette = &quot;Set1&quot;) +
+  scale_y_continuous(breaks = scales::pretty_breaks(7)) +
+  labs(x = NULL, y = &quot;Length of day [hours]&quot;, title = &quot;Length of days&quot;,
+       colour = NULL) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="/post/2018-02-13-day-lengths-in-graz-and-belgrade_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>day_difference &lt;- day_lengths %&gt;% 
+  select(date, city, day_length) %&gt;% 
+  spread(city, day_length) %&gt;% 
+  mutate(difference = Graz - Belgrade)
+day_difference</code></pre>
+<pre><code>## # A tibble: 365 x 4
+##    date       Belgrade         Graz             difference        
+##    &lt;date&gt;     &lt;time&gt;           &lt;time&gt;           &lt;time&gt;            
+##  1 2018-01-01 8.8675           8.58444444444445 -0.283055555555555
+##  2 2018-01-02 8.8825           8.60083333333333 -0.281666666666666
+##  3 2018-01-03 8.89833333333333 8.61861111111111 -0.279722222222222
+##  4 2018-01-04 8.91555555555555 8.6375           -0.278055555555556
+##  5 2018-01-05 8.93416666666667 8.6575           -0.276666666666666
+##  6 2018-01-06 8.95388888888889 8.67916666666667 -0.274722222222222
+##  7 2018-01-07 8.97472222222222 8.70222222222222 -0.272500000000001
+##  8 2018-01-08 8.99638888888889 8.72666666666667 -0.269722222222223
+##  9 2018-01-09 9.01972222222222 8.75194444444444 -0.267777777777779
+## 10 2018-01-10 9.04388888888889 8.77861111111111 -0.265277777777778
+## # ... with 355 more rows</code></pre>
+<pre class="r"><code>ggplot(day_difference, aes(date, difference)) +
+  geom_area(data = filter(day_difference, difference &gt;= 0), fill = &quot;#377EB8&quot;) +
+  geom_area(data = filter(day_difference, difference &lt; 0), fill = &quot;#E41A1C&quot;) +
+  geom_line() +
+  scale_y_continuous(labels = function(x) x * 60) +
+  geom_hline(yintercept = 0) +
+  annotate(&quot;text&quot;, x = ymd(&quot;2018-06-20&quot;), y = .15,
+           label = &quot;Longer days in Graz&quot;, colour = &quot;white&quot;) +
+  annotate(&quot;text&quot;, x = ymd(&quot;2018-02-01&quot;), y = -.05,
+           label = &quot;Shorter days&quot;, colour = &quot;white&quot;) +
+  annotate(&quot;text&quot;, x = ymd(&quot;2018-12-01&quot;), y = -.05,
+           label = &quot;in Graz&quot;, colour = &quot;white&quot;) +
+  labs(y = &quot;difference in minutes&quot;, title = &quot;Day lengths in Graz and Belgrade&quot;,
+       x = NULL)</code></pre>
+<p><img src="/post/2018-02-13-day-lengths-in-graz-and-belgrade_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
