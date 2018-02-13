@@ -48,14 +48,13 @@ seq(ymd(&quot;2017-01-01&quot;), ymd(&quot;2017-02-01&quot;), 1) %&gt;%
 # 
 # https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&amp;sdd=14.01.2017
 
-getwd()</code></pre>
-<pre><code>## [1] &quot;/Users/tklebel/Documents/Software/R/thomasklebel/content/post&quot;</code></pre>
+theme_set(hrbrmisc::theme_hrbrmstr())</code></pre>
 <pre class="r"><code>programs_df &lt;- read_rds(&quot;2017-11_swiss_radio.rds&quot;)
 programs_df %&gt;% 
-  filter(artist == &quot;Antonin Dvorak&quot;) %&gt;% 
-  count(title) %&gt;% 
+  # filter(artist == &quot;Edvard Grieg&quot;) %&gt;%
+  count(artist) %&gt;% 
   arrange(desc(n)) %&gt;% 
-  head(30) %&gt;% 
+  head(100) %&gt;% 
   mutate(index = 1:n()) %&gt;% 
   select(index, everything()) %&gt;% 
   knitr::kable()</code></pre>
@@ -63,160 +62,510 @@ programs_df %&gt;%
 <thead>
 <tr class="header">
 <th align="right">index</th>
-<th align="left">title</th>
+<th align="left">artist</th>
 <th align="right">n</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
-<td align="left">Slavonic Dance In F Major Op. 46 No. 4 “Sousedska”</td>
-<td align="right">567</td>
+<td align="left">Wolfgang Amadeus Mozart</td>
+<td align="right">39260</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
-<td align="left">“Tempo di Valse” From Serenade In E Major Op. 22</td>
-<td align="right">493</td>
+<td align="left">Ludwig van Beethoven</td>
+<td align="right">21738</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
-<td align="left">Slavonic Dance In E Minor Op. 72 No. 2</td>
-<td align="right">493</td>
+<td align="left">Joseph Haydn</td>
+<td align="right">18791</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
-<td align="left">Slavonic Dance In A Flat Major Op. 72 No. 8</td>
-<td align="right">475</td>
+<td align="left">Franz Schubert</td>
+<td align="right">16176</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
-<td align="left">Rondo In G Minor Op. 94 For Cello And Orchestra</td>
-<td align="right">458</td>
+<td align="left">Antonio Vivaldi</td>
+<td align="right">15538</td>
 </tr>
 <tr class="even">
 <td align="right">6</td>
-<td align="left">“Allegretto grazioso” From Symphony No. 8 In G Major Op. 88</td>
-<td align="right">402</td>
+<td align="left">Johann Sebastian Bach</td>
+<td align="right">12495</td>
 </tr>
 <tr class="odd">
 <td align="right">7</td>
-<td align="left">Largo From Symphony No. 9 Op. 95 “From the New World”</td>
-<td align="right">350</td>
+<td align="left">Felix Mendelssohn-Bartholdy</td>
+<td align="right">11929</td>
 </tr>
 <tr class="even">
 <td align="right">8</td>
-<td align="left">Slavonic Dance In D Major Op. 46 No. 6</td>
-<td align="right">342</td>
+<td align="left">Antonin Dvorak</td>
+<td align="right">10726</td>
 </tr>
 <tr class="odd">
 <td align="right">9</td>
-<td align="left">Slavonic Dance In D Flat Major Op. 72 No. 4</td>
-<td align="right">326</td>
+<td align="left">Gioachino Rossini</td>
+<td align="right">9989</td>
 </tr>
 <tr class="even">
 <td align="right">10</td>
-<td align="left">“Song to the Moon” From The Opera “Rusalka”</td>
-<td align="right">315</td>
+<td align="left">Frédéric Chopin</td>
+<td align="right">8820</td>
 </tr>
 <tr class="odd">
 <td align="right">11</td>
-<td align="left">Humoresque Op. 101 No. 7</td>
-<td align="right">293</td>
+<td align="left">Piotr Iljitsch Tchaikowsky</td>
+<td align="right">8413</td>
 </tr>
 <tr class="even">
 <td align="right">12</td>
-<td align="left">Slavonic Dance In E Minor “Allegretto scherzando” Op. 46 No. 2</td>
-<td align="right">293</td>
+<td align="left">Georg Friedrich Händel</td>
+<td align="right">8249</td>
 </tr>
 <tr class="odd">
 <td align="right">13</td>
-<td align="left">Scherzo From Symphony No. 7 In D Minor Op. 70</td>
-<td align="right">284</td>
+<td align="left">Tomaso Albinoni</td>
+<td align="right">6424</td>
 </tr>
 <tr class="even">
 <td align="right">14</td>
-<td align="left">Romance For Violin And Orchestra In F Minor Op. 11</td>
-<td align="right">278</td>
+<td align="left">Gaetano Donizetti</td>
+<td align="right">6172</td>
 </tr>
 <tr class="odd">
 <td align="right">15</td>
-<td align="left">Slavonic Dance Op. 46 No. 3 In A Flat Major “Polka”</td>
-<td align="right">245</td>
+<td align="left">Giuseppe Verdi</td>
+<td align="right">5870</td>
 </tr>
 <tr class="even">
 <td align="right">16</td>
-<td align="left">Waltz Op. 54 No. 1 In A Major</td>
-<td align="right">240</td>
+<td align="left">Johannes Brahms</td>
+<td align="right">5735</td>
 </tr>
 <tr class="odd">
 <td align="right">17</td>
-<td align="left">“Scherzo capriccioso” Op. 66</td>
-<td align="right">234</td>
+<td align="left">Johann Nepomuk Hummel</td>
+<td align="right">5623</td>
 </tr>
 <tr class="even">
 <td align="right">18</td>
-<td align="left">Slavonic Dance Op. 46 No. 6 In D Major “Sousedska”</td>
-<td align="right">234</td>
+<td align="left">Camille Saint-Saëns</td>
+<td align="right">5604</td>
 </tr>
 <tr class="odd">
 <td align="right">19</td>
-<td align="left">Moderato From Serenade For Strings In E Major Op. 22</td>
-<td align="right">229</td>
+<td align="left">Luigi Boccherini</td>
+<td align="right">5314</td>
 </tr>
 <tr class="even">
 <td align="right">20</td>
-<td align="left">Prague Waltz</td>
-<td align="right">220</td>
+<td align="left">Johann Christian Bach</td>
+<td align="right">5149</td>
 </tr>
 <tr class="odd">
 <td align="right">21</td>
-<td align="left">3 Bagatelles Op. 47</td>
-<td align="right">200</td>
+<td align="left">Antonio Rosetti</td>
+<td align="right">4924</td>
 </tr>
 <tr class="even">
 <td align="right">22</td>
-<td align="left">Romance For Violin And Orchestra Op. 11</td>
-<td align="right">192</td>
+<td align="left">Domenico Scarlatti</td>
+<td align="right">4841</td>
 </tr>
 <tr class="odd">
 <td align="right">23</td>
-<td align="left">“Adagio non troppo” From Cello Concerto In B Minor Op. 104</td>
-<td align="right">191</td>
+<td align="left">Georges Bizet</td>
+<td align="right">4629</td>
 </tr>
 <tr class="even">
 <td align="right">24</td>
-<td align="left">Romance And Finale From Bohemian (Czech) Suite Op. 39</td>
-<td align="right">187</td>
+<td align="left">Robert Schumann</td>
+<td align="right">4436</td>
 </tr>
 <tr class="odd">
 <td align="right">25</td>
-<td align="left">Slavonic Dances Op. 46 No. 7 and 8</td>
-<td align="right">186</td>
+<td align="left">Edvard Grieg</td>
+<td align="right">4412</td>
 </tr>
 <tr class="even">
 <td align="right">26</td>
-<td align="left">“Scherzo furiant” From Symphony No. 6 In D Major Op. 60</td>
-<td align="right">181</td>
+<td align="left">Georg Philipp Telemann</td>
+<td align="right">4358</td>
 </tr>
 <tr class="odd">
 <td align="right">27</td>
-<td align="left">Moderato From Serenade For Strings In E Major Op. 22 (CH)</td>
-<td align="right">172</td>
+<td align="left">Michael Haydn</td>
+<td align="right">3847</td>
 </tr>
 <tr class="even">
 <td align="right">28</td>
-<td align="left">Slavonic Dances Op. 46 No. 2 and 3</td>
-<td align="right">162</td>
+<td align="left">Carl Maria von Weber</td>
+<td align="right">3738</td>
 </tr>
 <tr class="odd">
 <td align="right">29</td>
-<td align="left">Symphony No. 9 In E Minor Op. 95 “From The New World”</td>
-<td align="right">159</td>
+<td align="left">Niccolò Paganini</td>
+<td align="right">3501</td>
 </tr>
 <tr class="even">
 <td align="right">30</td>
-<td align="left">Slavonic Dances Op. 72 No. 6 and 7</td>
-<td align="right">153</td>
+<td align="left">John Field</td>
+<td align="right">3342</td>
+</tr>
+<tr class="odd">
+<td align="right">31</td>
+<td align="left">Christoph Willibald Gluck</td>
+<td align="right">3163</td>
+</tr>
+<tr class="even">
+<td align="right">32</td>
+<td align="left">Johann Baptist Vanhal</td>
+<td align="right">3041</td>
+</tr>
+<tr class="odd">
+<td align="right">33</td>
+<td align="left">Franz Danzi</td>
+<td align="right">2799</td>
+</tr>
+<tr class="even">
+<td align="right">34</td>
+<td align="left">Carl Stamitz</td>
+<td align="right">2737</td>
+</tr>
+<tr class="odd">
+<td align="right">35</td>
+<td align="left">Giovanni Paisiello</td>
+<td align="right">2700</td>
+</tr>
+<tr class="even">
+<td align="right">36</td>
+<td align="left">Saverio Mercadante</td>
+<td align="right">2493</td>
+</tr>
+<tr class="odd">
+<td align="right">37</td>
+<td align="left">Ignaz Pleyel</td>
+<td align="right">2467</td>
+</tr>
+<tr class="even">
+<td align="right">38</td>
+<td align="left">Franz Liszt</td>
+<td align="right">2353</td>
+</tr>
+<tr class="odd">
+<td align="right">39</td>
+<td align="left">Carl Philipp Emanuel Bach</td>
+<td align="right">2322</td>
+</tr>
+<tr class="even">
+<td align="right">40</td>
+<td align="left">Edward Elgar</td>
+<td align="right">2275</td>
+</tr>
+<tr class="odd">
+<td align="right">41</td>
+<td align="left">Antonio Salieri</td>
+<td align="right">2242</td>
+</tr>
+<tr class="even">
+<td align="right">42</td>
+<td align="left">Gabriel Fauré</td>
+<td align="right">2198</td>
+</tr>
+<tr class="odd">
+<td align="right">43</td>
+<td align="left">Johann Strauss</td>
+<td align="right">2173</td>
+</tr>
+<tr class="even">
+<td align="right">44</td>
+<td align="left">Vincenzo Bellini</td>
+<td align="right">2112</td>
+</tr>
+<tr class="odd">
+<td align="right">45</td>
+<td align="left">Fernando Sor</td>
+<td align="right">2107</td>
+</tr>
+<tr class="even">
+<td align="right">46</td>
+<td align="left">Max Bruch</td>
+<td align="right">2017</td>
+</tr>
+<tr class="odd">
+<td align="right">47</td>
+<td align="left">Jean-Philippe Rameau</td>
+<td align="right">1909</td>
+</tr>
+<tr class="even">
+<td align="right">48</td>
+<td align="left">Mauro Giuliani</td>
+<td align="right">1858</td>
+</tr>
+<tr class="odd">
+<td align="right">49</td>
+<td align="left">Alexander Glazunov</td>
+<td align="right">1839</td>
+</tr>
+<tr class="even">
+<td align="right">50</td>
+<td align="left">Nikolaj Rimsky-Korsakov</td>
+<td align="right">1706</td>
+</tr>
+<tr class="odd">
+<td align="right">51</td>
+<td align="left">Isaac Albéniz</td>
+<td align="right">1685</td>
+</tr>
+<tr class="even">
+<td align="right">52</td>
+<td align="left">Charles Gounod</td>
+<td align="right">1679</td>
+</tr>
+<tr class="odd">
+<td align="right">53</td>
+<td align="left">Jean Sibelius</td>
+<td align="right">1674</td>
+</tr>
+<tr class="even">
+<td align="right">54</td>
+<td align="left">Michael Glinka</td>
+<td align="right">1658</td>
+</tr>
+<tr class="odd">
+<td align="right">55</td>
+<td align="left">Henry Purcell</td>
+<td align="right">1653</td>
+</tr>
+<tr class="even">
+<td align="right">56</td>
+<td align="left">Louis Spohr</td>
+<td align="right">1652</td>
+</tr>
+<tr class="odd">
+<td align="right">57</td>
+<td align="left">Giacomo Puccini</td>
+<td align="right">1636</td>
+</tr>
+<tr class="even">
+<td align="right">58</td>
+<td align="left">Joseph Joachim Raff</td>
+<td align="right">1636</td>
+</tr>
+<tr class="odd">
+<td align="right">59</td>
+<td align="left">Cécile Chaminade</td>
+<td align="right">1616</td>
+</tr>
+<tr class="even">
+<td align="right">60</td>
+<td align="left">Muzio Clementi</td>
+<td align="right">1597</td>
+</tr>
+<tr class="odd">
+<td align="right">61</td>
+<td align="left">Baldassare Galuppi</td>
+<td align="right">1587</td>
+</tr>
+<tr class="even">
+<td align="right">62</td>
+<td align="left">Alessandro Rolla</td>
+<td align="right">1574</td>
+</tr>
+<tr class="odd">
+<td align="right">63</td>
+<td align="left">Dmitri Shostakovich</td>
+<td align="right">1567</td>
+</tr>
+<tr class="even">
+<td align="right">64</td>
+<td align="left">Leopold Antonin Kozeluch</td>
+<td align="right">1566</td>
+</tr>
+<tr class="odd">
+<td align="right">65</td>
+<td align="left">Konzert-Tipp</td>
+<td align="right">1546</td>
+</tr>
+<tr class="even">
+<td align="right">66</td>
+<td align="left">Domenico Cimarosa</td>
+<td align="right">1544</td>
+</tr>
+<tr class="odd">
+<td align="right">67</td>
+<td align="left">François-Joseph Gossec</td>
+<td align="right">1517</td>
+</tr>
+<tr class="even">
+<td align="right">68</td>
+<td align="left">Claude Debussy</td>
+<td align="right">1511</td>
+</tr>
+<tr class="odd">
+<td align="right">69</td>
+<td align="left">Jacques Offenbach</td>
+<td align="right">1484</td>
+</tr>
+<tr class="even">
+<td align="right">70</td>
+<td align="left">Ermanno Wolf-Ferrari</td>
+<td align="right">1414</td>
+</tr>
+<tr class="odd">
+<td align="right">71</td>
+<td align="left">François Devienne</td>
+<td align="right">1377</td>
+</tr>
+<tr class="even">
+<td align="right">72</td>
+<td align="left">Christoph Ernst Friedrich Weyse</td>
+<td align="right">1372</td>
+</tr>
+<tr class="odd">
+<td align="right">73</td>
+<td align="left">Sergej Rachmaninov</td>
+<td align="right">1363</td>
+</tr>
+<tr class="even">
+<td align="right">74</td>
+<td align="left">Franz Krommer</td>
+<td align="right">1350</td>
+</tr>
+<tr class="odd">
+<td align="right">75</td>
+<td align="left">Emile Waldteufel</td>
+<td align="right">1333</td>
+</tr>
+<tr class="even">
+<td align="right">76</td>
+<td align="left">Emmanuel Chabrier</td>
+<td align="right">1324</td>
+</tr>
+<tr class="odd">
+<td align="right">77</td>
+<td align="left">Arthur Sullivan</td>
+<td align="right">1323</td>
+</tr>
+<tr class="even">
+<td align="right">78</td>
+<td align="left">Bedrich Smetana</td>
+<td align="right">1321</td>
+</tr>
+<tr class="odd">
+<td align="right">79</td>
+<td align="left">Franz Anton Hoffmeister</td>
+<td align="right">1307</td>
+</tr>
+<tr class="even">
+<td align="right">80</td>
+<td align="left">Joseph Boulogne, Chevalier de Saint-George</td>
+<td align="right">1307</td>
+</tr>
+<tr class="odd">
+<td align="right">81</td>
+<td align="left">Josef Myslivecek</td>
+<td align="right">1283</td>
+</tr>
+<tr class="even">
+<td align="right">82</td>
+<td align="left">Joaquin Rodrigo</td>
+<td align="right">1270</td>
+</tr>
+<tr class="odd">
+<td align="right">83</td>
+<td align="left">Gaspard Fritz</td>
+<td align="right">1264</td>
+</tr>
+<tr class="even">
+<td align="right">84</td>
+<td align="left">Ottorino Respighi</td>
+<td align="right">1227</td>
+</tr>
+<tr class="odd">
+<td align="right">85</td>
+<td align="left">Carl Ditters von Dittersdorf</td>
+<td align="right">1198</td>
+</tr>
+<tr class="even">
+<td align="right">86</td>
+<td align="left">Leopold Mozart</td>
+<td align="right">1166</td>
+</tr>
+<tr class="odd">
+<td align="right">87</td>
+<td align="left">Johann Simon Mayr</td>
+<td align="right">1159</td>
+</tr>
+<tr class="even">
+<td align="right">88</td>
+<td align="left">Ferdinand Ries</td>
+<td align="right">1155</td>
+</tr>
+<tr class="odd">
+<td align="right">89</td>
+<td align="left">François Adrien Boieldieu</td>
+<td align="right">1152</td>
+</tr>
+<tr class="even">
+<td align="right">90</td>
+<td align="left">Johann Christoph Friedrich Bach</td>
+<td align="right">1139</td>
+</tr>
+<tr class="odd">
+<td align="right">91</td>
+<td align="left">Enrique Granados</td>
+<td align="right">1120</td>
+</tr>
+<tr class="even">
+<td align="right">92</td>
+<td align="left">Leopold Hofmann</td>
+<td align="right">1110</td>
+</tr>
+<tr class="odd">
+<td align="right">93</td>
+<td align="left">Léo Delibes</td>
+<td align="right">1105</td>
+</tr>
+<tr class="even">
+<td align="right">94</td>
+<td align="left">Heinrich Joseph Baermann</td>
+<td align="right">1086</td>
+</tr>
+<tr class="odd">
+<td align="right">95</td>
+<td align="left">Carl Czerny</td>
+<td align="right">1080</td>
+</tr>
+<tr class="even">
+<td align="right">96</td>
+<td align="left">Juan Chrisóstomo de Arriaga</td>
+<td align="right">1067</td>
+</tr>
+<tr class="odd">
+<td align="right">97</td>
+<td align="left">Alexander Borodin</td>
+<td align="right">1024</td>
+</tr>
+<tr class="even">
+<td align="right">98</td>
+<td align="left">Johann Ludwig Böhner</td>
+<td align="right">963</td>
+</tr>
+<tr class="odd">
+<td align="right">99</td>
+<td align="left">Clara Schumann</td>
+<td align="right">955</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="left">Hector Berlioz</td>
+<td align="right">952</td>
 </tr>
 </tbody>
 </table>
@@ -235,9 +584,6 @@ programs_df %&gt;%
   ggplot(aes(time, val, colour = type)) +
   geom_line() +
   hrbrmisc::theme_hrbrmstr()</code></pre>
-<pre><code>## Warning in as.POSIXlt.POSIXct(x): unknown timezone &#39;default/Europe/Vienna&#39;</code></pre>
-<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz = tz(x)): unknown timezone &#39;default/
-## Europe/Vienna&#39;</code></pre>
 <p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre class="r"><code># bad approach, should normalise over duration</code></pre>
 <pre class="r"><code>pdata &lt;- programs_df %&gt;% 
@@ -252,20 +598,67 @@ programs_df %&gt;%
             symphonies = sum(symphony)/n,
             concertos = sum(concerto)/n) %&gt;% 
   select(-n) %&gt;% 
-  gather(type, val, -artist)</code></pre>
-<pre><code>## Warning in as.POSIXlt.POSIXct(x): unknown timezone &#39;default/Europe/Vienna&#39;</code></pre>
-<pre><code>## Warning in as.POSIXlt.POSIXct(x, tz = tz(x)): unknown timezone &#39;default/
-## Europe/Vienna&#39;</code></pre>
-<pre class="r"><code>pdata %&gt;% 
+  gather(type, val, -artist)
+
+pdata %&gt;% 
   ggplot(aes(type, val, fill = artist)) +
   geom_col(position = &quot;dodge&quot;) +
   coord_flip() +
   hrbrmisc::theme_hrbrmstr()</code></pre>
 <p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
+<div id="join-with-data-from-wikipedia" class="section level1">
+<h1>Join with data from wikipedia</h1>
+<pre class="r"><code>library(fuzzyjoin)
+meta_data &lt;- read_csv(&quot;2017-11_composer_metadata.csv&quot;) %&gt;% 
+  distinct()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   composer = col_character(),
+##   year_of_birth = col_integer(),
+##   year_of_death = col_integer()
+## )</code></pre>
+<pre class="r"><code>combined &lt;- programs_df %&gt;% 
+  count(artist) %&gt;% 
+  stringdist_left_join(meta_data, by = c(&quot;artist&quot; = &quot;composer&quot;),
+                       method = &quot;jw&quot;, max_dist = .25, distance_col = &quot;dist&quot;) %&gt;%
+  arrange(artist, dist) %&gt;% 
+  group_by(artist) %&gt;% 
+  slice(1) %&gt;% 
+  left_join(programs_df)</code></pre>
+<pre><code>## Joining, by = &quot;artist&quot;</code></pre>
+<pre class="r"><code>combined %&gt;% 
+  ggplot(aes(year_of_birth)) +
+  geom_freqpoly(binwidth = 2)</code></pre>
+<pre><code>## Warning: Removed 20496 rows containing non-finite values (stat_bin).</code></pre>
+<p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>combined %&gt;% 
+  distinct(artist, n, year_of_birth) %&gt;% 
+  ggplot(aes(year_of_birth, n)) +
+  geom_col()</code></pre>
+<pre><code>## Warning: Removed 125 rows containing missing values (position_stack).</code></pre>
+<p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>combined %&gt;% 
+  distinct(artist, n, year_of_birth) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(50) %&gt;% 
+  ggplot(aes(year_of_birth, n)) +
+  geom_col()</code></pre>
+<p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>combined %&gt;% 
+  distinct(artist, n, year_of_birth) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(20)  %&gt;% 
+  ggplot(aes(fct_reorder(artist, n), n, fill = year_of_birth)) +
+  geom_col(width = .8) +
+  coord_flip() +
+  viridis::scale_fill_viridis()</code></pre>
+<p><img src="/post/2017-11-04-classical-nights_files/figure-html/unnamed-chunk-8-1.png" width="288" /></p>
+<p>Problem: Shostakovich is parsed in a bad way: “Shostakovich, DmitriDmitri Shostakovich”. Need to find out, why these cases don’t work out.</p>
+</div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>The program is organised into different shows throughout the day, and not a continuous stream of music<a href="#fnref1">↩</a></p></li>
+<li id="fn1"><p>The program is organised into different shows throughout the day, and not a continuous stream of music.<a href="#fnref1">↩</a></p></li>
 </ol>
 </div>

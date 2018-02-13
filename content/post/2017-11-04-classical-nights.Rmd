@@ -45,7 +45,7 @@ For startes I wanted to compare what is being aired on Radio Swiss classic
 with the program of an Austrian counterpart - [radio klassik Stephansdom](https://radioklassik.at). Since the internal layout of their
 page is a lot more complicated than the one of Radio Swiss classic^[
 The program is organised into different shows throughout the day, and not a
-continuous stream of music], I will for starters just download pieces from during
+continuous stream of music.], I will for starters just download pieces from during
 night time (the programme is called "Nacht", german for "night"), which consists
 of 5-7 hours of uninterrupted music. This should compare nicely to the part
 of Maëlle's data on pieces during night time.
@@ -71,7 +71,7 @@ seq(ymd("2017-01-01"), ymd("2017-02-01"), 1) %>%
 # 
 # https://radioklassik.at/programm/sendungsdetails/?sdk=nacht&sdd=14.01.2017
 
-getwd()
+theme_set(hrbrmisc::theme_hrbrmstr())
 
 ```
 
@@ -144,10 +144,10 @@ write_rds(programs_df, "2017-11_swiss_radio.rds", compress = "gz")
 ```{r}
 programs_df <- read_rds("2017-11_swiss_radio.rds")
 programs_df %>% 
-  filter(artist == "Antonin Dvorak") %>% 
-  count(title) %>% 
+  # filter(artist == "Edvard Grieg") %>%
+  count(artist) %>% 
   arrange(desc(n)) %>% 
-  head(30) %>% 
+  head(100) %>% 
   mutate(index = 1:n()) %>% 
   select(index, everything()) %>% 
   knitr::kable()
@@ -197,4 +197,58 @@ pdata %>%
   hrbrmisc::theme_hrbrmstr()
 ```
 
+# Join with data from wikipedia
+```{r}
+library(fuzzyjoin)
+meta_data <- read_csv("2017-11_composer_metadata.csv") %>% 
+  distinct()
+
+combined <- programs_df %>% 
+  count(artist) %>% 
+  stringdist_left_join(meta_data, by = c("artist" = "composer"),
+                       method = "jw", max_dist = .25, distance_col = "dist") %>%
+  arrange(artist, dist) %>% 
+  group_by(artist) %>% 
+  slice(1) %>% 
+  left_join(programs_df)
+  
+combined %>% 
+  ggplot(aes(year_of_birth)) +
+  geom_freqpoly(binwidth = 2)
+
+combined %>% 
+  distinct(artist, n, year_of_birth) %>% 
+  ggplot(aes(year_of_birth, n)) +
+  geom_col()
+
+
+```
+
+```{r}
+combined %>% 
+  distinct(artist, n, year_of_birth) %>% 
+  arrange(desc(n)) %>% 
+  head(50) %>% 
+  ggplot(aes(year_of_birth, n)) +
+  geom_col()
+```
+
+
+```{r, fig.height=3, fig.width=3}
+combined %>% 
+  distinct(artist, n, year_of_birth) %>% 
+  arrange(desc(n)) %>% 
+  head(20)  %>% 
+  ggplot(aes(fct_reorder(artist, n), n, fill = year_of_birth)) +
+  geom_col(width = .8) +
+  coord_flip() +
+  viridis::scale_fill_viridis()
+
+```
+
+
+
+Problem: Shostakovich is parsed in a bad way:
+"Shostakovich, DmitriDmitri Shostakovich". Need to find out, why these cases
+don't work out.
 
