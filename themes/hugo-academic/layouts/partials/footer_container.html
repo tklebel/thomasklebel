@@ -4,14 +4,18 @@
 
       {{ with .Site.Copyright }}{{ . | markdownify}} &middot; {{ end }}
 
-      Powered by 
+      Powered by
       <a href="https://github.com/rstudio/blogdown" target="_blank" rel="noopener">Blogdown</a>
       and the
       <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
       <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
-      
+
       <br>
       All blog posts are released under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">(CC)-BY-SA</a>.
+
+      <br>
+
+      <a href="{{ .Site.BaseURL }}privacy/privacy">Privacy</a> / <a href="{{ .Site.BaseURL }}privacy/impressum">Impressum</a>
 
       <span class="pull-right" aria-hidden="true">
         <a href="#" id="back_to_top">
