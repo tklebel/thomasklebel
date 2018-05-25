@@ -4,3 +4,7 @@
 .Ruserdata
 
 public/
+
+.DS_Store
+*.rds
+*.csv
