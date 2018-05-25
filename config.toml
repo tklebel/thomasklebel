@@ -120,7 +120,7 @@ defaultContentLanguageInSubdir = false
   highlight_style = "atom-one-light"
 
   # Enable native social sharing buttons?
-  sharing = true
+  sharing = false
 
   # Link custom CSS and JS assets
   #   (relative to /static/css and /static/js respectively)
