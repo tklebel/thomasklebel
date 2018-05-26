@@ -9,7 +9,7 @@
     {{ with $page.Params.subtitle }}<p>{{ . | markdownify }}</p>{{ end }}
     {{ if gt $talks_len $page.Params.count }}
     <p class="view-all">
-      <a href="{{ "/talk/" | relLangURL }}">
+      <a href="{{ ($.Site.GetPage "section" "talk").Permalink }}">
         {{ i18n "more_talks" | markdownify }}
         <i class="fa fa-angle-double-right"></i>
       </a>
@@ -19,7 +19,7 @@
   <div class="col-xs-12 col-md-8">
     {{ with $page.Content }}<p>{{ . | markdownify }}</p>{{ end }}
 
-    {{ range first $page.Params.count (where $.Site.RegularPages "Type" "talk") }}
+    {{ range first $page.Params.count (sort (where $.Site.RegularPages "Type" "talk") ".Params.time_start" "desc") }}
       {{ if eq $page.Params.list_format 1 }}
         {{ partial "talk_li_detailed" . }}
       {{ else }}

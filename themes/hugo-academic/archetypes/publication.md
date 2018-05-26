@@ -9,12 +9,12 @@ authors = [""]
 # Publication type.
 # Legend:
 # 0 = Uncategorized
-# 1 = Conference proceedings
-# 2 = Journal
-# 3 = Work in progress
-# 4 = Technical report
+# 1 = Conference paper
+# 2 = Journal article
+# 3 = Manuscript
+# 4 = Report
 # 5 = Book
-# 6 = Book chapter
+# 6 = Book section
 publication_types = ["0"]
 
 # Publication name and optional abbreviated version.
@@ -33,9 +33,14 @@ selected = false
 
 # Projects (optional).
 #   Associate this publication with one or more of your projects.
-#   Simply enter the filename (excluding '.md') of your project file in `content/project/`.
-#   E.g. `projects = ["deep-learning"]` references `content/project/deep-learning.md`.
+#   Simply enter the filename of your project file in `content/project/`.
+#   E.g. `projects = ["deep-learning.md"]` references `content/project/deep-learning.md`.
+#   Otherwise, set `projects = []`.
 projects = []
+
+# Tags (optional).
+#   Set `tags = []` for no tags, or use the form `tags = ["A Tag", "Another Tag"]` for one or more tags.
+tags = []
 
 # Links (optional).
 url_pdf = ""
