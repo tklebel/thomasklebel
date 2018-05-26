@@ -20,8 +20,9 @@ You can find more information on how Google uses data and what you can to
 prevent it [here](https://privacy.google.com/your-data.html).
 
 For blogposts, I use [Disqus](https://disqus.com/) to power comments. Disqus
-does not set cookies for visitors from EU locations. You can opt out of any
-further tracking from Disqus [here](https://disqus.com/data-sharing-settings/)
+should not be setting cookies for visitors from EU locations.
+You can opt out of any tracking from Disqus
+[here](https://disqus.com/data-sharing-settings/)
 and review their privacy policy 
 [here](https://help.disqus.com/commenting/gdpr-delete-or-access-user-data).
 
