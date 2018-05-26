@@ -1,0 +1,25 @@
+<script>
+  // functions for managing opt out of cookies
+
+  // set var for ga opt out
+  var disableStr = 'ga-disable-' + {{ .Site.GoogleAnalytics }};
+  // Disable tracking if the opt-out cookie exists.
+  if (document.cookie.indexOf(disableStr + '=true') > -1) {
+    window[disableStr] = true;
+  }
+
+  // function for deleting cookies
+  function delete_cookie(name) {
+    document.cookie = name +'=; path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  }
+  // Opt-out function
+  function gaOptout() {
+    document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+    window[disableStr] = true;
+
+    // remove cookies set by GA
+    delete_cookie('_ga');
+    delete_cookie('_gat');
+    delete_cookie('_gid');
+  }
+</script>
