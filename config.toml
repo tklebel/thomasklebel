@@ -1,6 +1,6 @@
 baseurl = "/"  # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
 title = "Thomas Klebel"
-copyright = "&copy; 2017-2018 Thomas Klebel"
+copyright = "&copy; 2017-2019 Thomas Klebel"
 theme = "hugo-academic"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
@@ -67,7 +67,7 @@ defaultContentLanguageInSubdir = false
 
   # Organizations/Affiliations.
   #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
-  organizations = [ { name = "University of Graz", url = "https://soziologie.uni-graz.at" } ]
+  organizations = [ { name = "Graz University of Technology", url = "https://www.tugraz.at/institutes/isds/research/groups/" } ]
 
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
   avatar = "portrait.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
@@ -214,7 +214,7 @@ defaultContentLanguageInSubdir = false
   [[params.social]]
     icon = "envelope"
     icon_pack = "fa"
-    link = "mailto:thomas.klebel@uni-graz.at"
+    link = "mailto:thomas.klebel@tugraz.at"
 
   [[params.social]]
     icon = "twitter"

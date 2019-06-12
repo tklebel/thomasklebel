@@ -1,13 +1,13 @@
 ---
 title: Impressum
-date: '2017-10-28'
+date: '2019-06-12'
 disable_comments: true
 ---
 
 **Kontakt**:
 
 - Thomas Klebel
-- thomas.klebel(at)uni-graz.at
+- thomas.klebel(at)tugraz.at
 - Wohnort: Graz
 
 Für den Inhalt verantwortlich: Thomas Klebel
