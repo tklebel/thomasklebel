@@ -12,7 +12,9 @@ weight = 5
   interests = [
     "Class & Social Inequality",
     "Social Mobility",
-    "Quantitative Methodology"
+    "Quantitative Methodology",
+    "Open Science",
+    "Reproducibility"
   ]
 
 # List your qualifications (such as academic degrees).
