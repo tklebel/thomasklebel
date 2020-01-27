@@ -2,7 +2,7 @@
 # About/Biography widget.
 widget = "about"
 active = true
-date = "2017-10-28T00:00:00"
+date = "2020-01-28T00:00:00"
 
 # Order that this section will appear in.
 weight = 5
@@ -14,10 +14,17 @@ weight = 5
     "Social Mobility",
     "Quantitative Methodology",
     "Open Science",
-    "Reproducibility"
+    "Reproducibility",
+    "Scholarly Communication",
+    "Bibliometrics"
   ]
 
 # List your qualifications (such as academic degrees).
+[[education.courses]]
+  course = "MA in Sociology"
+  institution = "University of Graz"
+  year = 2019
+
 [[education.courses]]
   course = "BA in Sociology"
   institution = "University of Graz"
@@ -32,15 +39,17 @@ weight = 5
 
 # About
 
-My name is Thomas Klebel and I am a sociologist. Currently I am pursuing my 
-master studies in sociology at the University of Graz, where I also work
-part-time as a research assistant at the Department of Sociology.
+My name is Thomas Klebel and I am a sociologist. Currently I working as a 
+researcher and Data Scientist in the 
+[Open and Reproducible Research Group](https://www.tugraz.at/institute/isds/research/groups/orrg/)
+at Graz University of Technology. Starting with March 2020, I will work as
+project manager and reseracher in the H2020 project 
+[ON-MERRIT](https://on-merrit.eu).
 
-My research interests in sociology are focussed on issues of class,
-inequality and social mobility. My work as a research assistant is concerned
-with questions of the academic elite within sociology. Through sociology I came 
-into contact with statistics and data visualisation, which I'm very passionate
-about.
+My thesis in sociology was on social mobility, but I spend most of my 
+professional time now researching questions on scholarly communication, 
+bibliometrics and research integrity. Luckily, this also involves munging, 
+analysing and visualising data which I quite enjoy.
 
 Although my focus has been on sociology and stats/data science for a few years 
 now, I initially
