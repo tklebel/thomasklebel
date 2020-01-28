@@ -5,3 +5,4 @@ https://thomas-klebel.netlify.com/* https://thomasklebel.eu/:splat 301!
 
 # redirect orcid
 /orcid/ https://orcid.org/0000-0002-7331-4751
+/jstor/ /talk/user-2018/
