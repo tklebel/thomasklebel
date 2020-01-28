@@ -1,0 +1,7 @@
+# this file is a good guide: https://github.com/rbind/yihui/blob/master/static/_redirects
+
+# Redirect default Netlify subdomain to primary domain
+https://thomas-klebel.netlify.com/* https://thomasklebel.eu/:splat 301!
+
+# redirect orcid
+/orcid/ https://orcid.org/0000-0002-7331-4751
