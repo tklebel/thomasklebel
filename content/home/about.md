@@ -37,8 +37,6 @@ weight = 2
  
 +++
 
-# About
-
 My name is Thomas Klebel and I am a sociologist. I work as a 
 researcher and data scientist in the 
 [Open and Reproducible Research Group](https://www.tugraz.at/institute/isds/research/groups/orrg/)
