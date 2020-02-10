@@ -18,7 +18,7 @@ authors = ["Thomas Klebel", "Stefan Reichmann", "Jessica Polka", "Gary McDowell"
 publication_types = ["3"]
 
 # Publication name and optional abbreviated version.
-publication = "bioRxiv"
+publication = "*bioRxiv*"
 # publication_short = "In *ICMEW*"
 
 # Abstract and optional shortened version.
