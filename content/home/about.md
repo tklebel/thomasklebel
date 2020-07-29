@@ -40,7 +40,7 @@ weight = 2
 My name is Thomas Klebel and I am a sociologist. I work as a 
 researcher and data scientist in the 
 [Open and Reproducible Research Group](https://www.tugraz.at/institute/isds/research/groups/orrg/)
-at Graz University of Technology. Starting with March 2020, I will be
+at Know-Center GmbH in Graz. Since March 2020, I am
 project manager and researcher in the H2020 project 
 [ON-MERRIT](https://on-merrit.eu).
 

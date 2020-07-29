@@ -1,13 +1,13 @@
 ---
 title: Impressum
-date: '2019-06-12'
+date: '2020-07-29'
 disable_comments: true
 ---
 
 **Kontakt**:
 
 - Thomas Klebel
-- thomas.klebel(at)tugraz.at
+- tklebel(at)know-center.at
 - Wohnort: Graz
 
 Für den Inhalt verantwortlich: Thomas Klebel
