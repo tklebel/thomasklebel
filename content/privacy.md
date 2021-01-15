@@ -27,4 +27,4 @@ and review their privacy policy
 [here](https://help.disqus.com/commenting/gdpr-delete-or-access-user-data).
 
 If you have any further concerns or requests, please contact me at 
-`thomas.klebel(at)tugraz.at`.
+`tklebel(at)know-center.at`.
