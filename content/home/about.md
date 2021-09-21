@@ -44,7 +44,7 @@ at Know-Center GmbH in Graz. Since March 2020, I am
 project manager and researcher in the H2020 project 
 [ON-MERRIT](https://on-merrit.eu).
 
-My thesis in sociology was on social mobility, but I spend most of my 
+My master's thesis in sociology was on social mobility, but I spend most of my 
 professional time now researching questions on scholarly communication, 
 bibliometrics and research integrity. Luckily, this also involves munging, 
 analysing and visualising data which I quite enjoy.
