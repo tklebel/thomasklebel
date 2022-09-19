@@ -28,7 +28,7 @@ abstract = "The interest in text as data has seen a sharp increase in the past f
 image_preview = ""
 
 # Is this a selected publication? (true/false)
-selected = true
+selected = false
 
 # Projects (optional).
 #   Associate this publication with one or more of your projects.

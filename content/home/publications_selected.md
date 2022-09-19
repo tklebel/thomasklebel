@@ -6,7 +6,7 @@ widget = "publications_selected"
 active = true
 date = 2016-04-20T00:00:00
 
-title = "Selected Publications"
+title = "Publications"
 subtitle = ""
 
 # Order that this section will appear in.
@@ -30,4 +30,8 @@ list_format = 0
 #  6: Book chapter
 publication_type = "-1"
 +++
+
+
+All my publications can be found on [Google Scholar](https://scholar.google.com/citations?user=rJx8wQ4AAAAJ)
+or [ORCID](https://orcid.org/0000-0002-7331-4751).
 

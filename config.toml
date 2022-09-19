@@ -1,6 +1,6 @@
 baseurl = "/"  # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
 title = "Thomas Klebel"
-copyright = "&copy; 2017-2021 Thomas Klebel"
+copyright = "&copy; 2017-2022 Thomas Klebel"
 theme = "hugo-academic"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
@@ -63,7 +63,7 @@ defaultContentLanguageInSubdir = false
 
   # Your details.
   name = "Thomas Klebel"
-  role = "Researcher & Data Scientist"
+  role = "Researcher & Project manager"
 
   # Organizations/Affiliations.
   #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
@@ -248,10 +248,10 @@ defaultContentLanguageInSubdir = false
  url = "#publications_selected"
  weight = 2
 
-[[menu.main]]
-  name = "Posts"
-  url = "#posts"
-  weight = 3
+# [[menu.main]]
+#   name = "Posts"
+#   url = "#posts"
+#   weight = 3
 
 [[menu.main]]
   name = "Talks"
