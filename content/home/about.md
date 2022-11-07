@@ -55,4 +55,4 @@ bibliometrics and open science. For my PhD, I research potential negative
 side-effects of Open Science within the academic publishing system.
 
 Although my focus has been on sociology and stats/data science for a few years 
-now, I initially trained as a musician, receiving a BA for playing the cello.
+now, I initially trained as a musician, receiving a BA for playing the cello. <a rel="me" href="https://scicomm.xyz/@tklebel"></a>
