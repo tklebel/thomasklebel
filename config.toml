@@ -219,7 +219,7 @@ defaultContentLanguageInSubdir = false
   [[params.social]]
     icon = "twitter"
     icon_pack = "fa"
-    link = "//twitter.com/klebel_t"
+    link = "//scicomm.xyz/@tklebel"
 
   # [[params.social]]
   #   icon = "google-scholar"
