@@ -223,7 +223,7 @@ defaultContentLanguageInSubdir = false
     
   [[params.social]]
     icon = "mastodon"
-    icon_pack = "fa"
+    icon_pack = "fa-brands"
     link = "//scicomm.xyz/@tklebel"
 
   # [[params.social]]
@@ -233,7 +233,7 @@ defaultContentLanguageInSubdir = false
 
   [[params.social]]
     icon = "github"
-    icon_pack = "fa"
+    icon_pack = "fa-brands"
     link = "//github.com/tklebel"
 
 
