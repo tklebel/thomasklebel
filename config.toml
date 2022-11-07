@@ -216,10 +216,15 @@ defaultContentLanguageInSubdir = false
     icon_pack = "fa"
     link = "mailto:tklebel@know-center.at"
 
+  # [[params.social]]
+  # icon = "twitter"
+  # icon_pack = "fa"
+  # link = "//twitter.com/klebel_t"
+    
   [[params.social]]
-    icon = "twitter"
+    icon = "mastodon"
     icon_pack = "fa"
-    link = "//twitter.com/klebel_t"
+    link = "//scicomm.xyz/@tklebel"
 
   # [[params.social]]
   #   icon = "google-scholar"
