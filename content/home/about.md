@@ -11,11 +11,12 @@ weight = 2
 [interests]
   interests = [
     "Data Science & Statistics",
+    "Causal inference",
     "Open Access publishing",
     "Open Science",
     "Reproducibility",
     "Scholarly Communication",
-    "Bibliometrics",
+    "Scientometrics",
     "Class & Social Inequality",
   ]
 
@@ -23,7 +24,7 @@ weight = 2
 [[education.courses]]
   course = "PhD in Sociology"
   institution = "University of Graz"
-  year = 2023
+  year = 2024
   
 [[education.courses]]
   course = "MA in Sociology"
@@ -43,16 +44,12 @@ weight = 2
 +++
 
 My name is Thomas Klebel and I am a sociologist. I work as a 
-project manager and researcher  in the 
+senior researcher in the 
 [Open and Reproducible Research Group](https://www.tugraz.at/institute/isds/research/groups/orrg/)
-at Know-Center GmbH in Graz. From March 2020 to March 2022, I was
-project manager and researcher for the H2020 project 
-[ON-MERRIT](https://on-merrit.eu).
+at Know-Center Research GmbH in Graz.
 
-My master's thesis in sociology was on social mobility, but I spend most of my 
-professional time now researching questions on scholarly communication, 
-bibliometrics and open science. For my PhD, I research potential negative 
-side-effects of Open Science within the academic publishing system.
+In my research, I investigate unintended consequences of current implementations of Open Research, ways of improving the reproducibility of research findings, and avenues for sustainable business models around open research infrastructure.
 
-Although my focus has been on sociology and stats/data science for a few years 
-now, I initially trained as a musician, receiving a BA for playing the cello. <a rel="me" href="https://scicomm.xyz/@tklebel"></a>
+Although equipped with training and experience in various methods of conducting research, my main focus has been on quantitative methods of inquiry. I'm particularly interested in causal modelling and ways of improving empirical research practice broadly conceived. 
+
+I completed my doctoral studies in Sociology in 2024 and also hold a degree in Music Performance from the University of Performing Arts Graz. <a rel="me" href="https://scicomm.xyz/@tklebel"></a>
