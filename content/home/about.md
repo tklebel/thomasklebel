@@ -43,13 +43,10 @@ weight = 2
  
 +++
 
-My name is Thomas Klebel and I am a sociologist. I work as a 
-senior researcher in the 
-[Open and Reproducible Research Group](https://www.tugraz.at/institute/isds/research/groups/orrg/)
-at Know-Center Research GmbH in Graz.
+I'm a sociologist aiming to improve our understanding of how research is being conducted across disciplines. I work as a Senior Scientist at the [Complex Social & Computational Systems group](https://idea-lab.uni-graz.at/en/specialist-areas/data-analysis/) at the [IDea_Lab](https://idea-lab.uni-graz.at/en/) at [University of Graz](https://www.uni-graz.at/en/).
 
-In my research, I investigate unintended consequences of current implementations of Open Research, ways of improving the reproducibility of research findings, and avenues for sustainable business models around open research infrastructure.
+In my previous work I have investigated the academic impact of Open Science, with a focus on potentially unintended consequences. I try to make my research as reproducible as possible, and subsequently aim to contribute to our understanding of when reproducibility is a relevant goal and how it can be achieved. I'm particularly interested in the implications of increasing adoption of genAI tools by researchers on the research system at large (regarding epistemic questions, but also about implications on reviewing and the publishing system).
 
-Although equipped with training and experience in various methods of conducting research, my main focus has been on quantitative methods of inquiry. I'm particularly interested in causal modelling and ways of improving empirical research practice broadly conceived. 
+Although equipped with training and experience in various methods of conducting research, my main focus has been on quantitative methods of inquiry. I’m particularly interested in causal modelling and ways of improving empirical research practice broadly conceived.
 
-I completed my doctoral studies in Sociology in 2024 and also hold a degree in Music Performance from the University of Performing Arts Graz. <a rel="me" href="https://scicomm.xyz/@tklebel"></a>
+I completed my doctoral studies in Sociology in 2024 and also hold a degree in Music Performance from the University of Performing Arts Graz.
