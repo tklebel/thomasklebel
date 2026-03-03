@@ -63,16 +63,16 @@ defaultContentLanguageInSubdir = false
 
   # Your details.
   name = "Thomas Klebel"
-  role = "Senior Researcher"
+  role = "Senior Scientist"
 
   # Organizations/Affiliations.
   #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
-  organizations = [ { name = "Know-Center GmbH", url = "https://www.know-center.at" } ]
+  organizations = [ { name = "University of Graz", url = "https://idea-lab.uni-graz.at/en/specialist-areas/data-analysis" } ]
 
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
   avatar = "portrait.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
   email = ""
-  address = "" # 8010 Graz, Universitätsstraße 15 Bauteil K/III, Raum 015K030007
+  address = "" # 8010 Graz, Leechgasse 34
   office_hours = ""
   phone = "" # +43 316 380 - 7414
   skype = ""
@@ -214,12 +214,12 @@ defaultContentLanguageInSubdir = false
   [[params.social]]
     icon = "envelope"
     icon_pack = "fa"
-    link = "mailto:tklebel@know-center.at"
+    link = "mailto:thomas.klebel@uni-graz.at"
 
   [[params.social]]
-    icon = "twitter"
+    icon = "bluesky"
     icon_pack = "fa"
-    link = "//scicomm.xyz/@tklebel"
+    link = "https://bsky.app/profile/tklebel.bsky.social"
 
   # [[params.social]]
   #   icon = "google-scholar"
