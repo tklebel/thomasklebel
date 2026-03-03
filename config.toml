@@ -70,7 +70,7 @@ defaultContentLanguageInSubdir = false
   organizations = [ { name = "University of Graz", url = "https://idea-lab.uni-graz.at/en/specialist-areas/data-analysis" } ]
 
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
-  avatar = "portrait.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
+  avatar = "portrait.png"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
   email = ""
   address = "" # 8010 Graz, Leechgasse 34
   office_hours = ""
