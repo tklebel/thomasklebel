@@ -24,7 +24,7 @@
           {{ $tagCount := len $taxonomy.Pages }}
           {{ $weight := div (sub (math.Log $tagCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
           {{ $fontSize := add $fontSmall (mul (sub $fontBig $fontSmall) $weight) }}
-          <a href="{{ ($.Site.GetPage (printf "/tags/%s" ($name | urlize))).Permalink }}" style="font-size:{{ $fontSize }}rem">{{ $name }}</a>
+          <a href="{{ (printf "/tags/%s/" ($name | urlize)) | absURL }}" style="font-size:{{ $fontSize }}rem">{{ $name }}</a>
         {{ end }}
       </div>
     {{ end }}

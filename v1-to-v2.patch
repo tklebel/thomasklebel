@@ -1,0 +1,91 @@
+diff --git a/themes/hugo-academic/layouts/partials/article_metadata.html b/themes/hugo-academic/layouts/partials/article_metadata.html
+index 124507b..bd38025 100644
+--- a/themes/hugo-academic/layouts/partials/article_metadata.html
++++ b/themes/hugo-academic/layouts/partials/article_metadata.html
+@@ -34,7 +34,7 @@
+   <span class="article-categories">
+     <i class="fa fa-folder"></i>
+     {{ range $k, $v := $.Params.categories }}
+-    <a href="{{ ($.Site.GetPage (printf "/categories/%s" (. | urlize))).Permalink }}">{{ . }}</a
++    <a href="{{ (printf "/categories/%s/" (. | urlize)) | absURL }}">{{ . }}</a
+     >{{ if lt $k (sub $categoriesLen 1) }}, {{ end }}
+     {{ end }}
+   </span>
+diff --git a/themes/hugo-academic/layouts/partials/tags.html b/themes/hugo-academic/layouts/partials/tags.html
+index d947cee..2cd8292 100644
+--- a/themes/hugo-academic/layouts/partials/tags.html
++++ b/themes/hugo-academic/layouts/partials/tags.html
+@@ -3,7 +3,7 @@
+ {{ if gt $tagsLen 0 }}
+ <div class="article-tags">
+   {{ range $k, $v := $.Params.tags }}
+-  <a class="btn btn-primary btn-outline" href="{{ ($.Site.GetPage (printf "/tags/%s" (. | urlize))).Permalink }}">{{ . }}</a>
++  <a class="btn btn-primary btn-outline" href="{{ (printf "/tags/%s/" (. | urlize)) | absURL }}">{{ . }}</a>
+   {{ end }}
+ </div>
+ {{ end }}
+diff --git a/themes/hugo-academic/layouts/partials/widgets/posts.html b/themes/hugo-academic/layouts/partials/widgets/posts.html
+index fb80d5a..4a4240f 100644
+--- a/themes/hugo-academic/layouts/partials/widgets/posts.html
++++ b/themes/hugo-academic/layouts/partials/widgets/posts.html
+@@ -10,7 +10,7 @@
+     {{ with $page.Params.subtitle }}<p>{{ . | markdownify }}</p>{{ end }}
+     {{ if gt $posts_len $page.Params.count }}
+     <p class="view-all">
+-      <a href="{{ ($.Site.GetPage "/post").Permalink }}">
++      <a href="{{ "/post/" | absURL }}">
+         {{ i18n "more_posts" | markdownify }}
+         <i class="fa fa-angle-double-right"></i>
+       </a>
+diff --git a/themes/hugo-academic/layouts/partials/widgets/publications.html b/themes/hugo-academic/layouts/partials/widgets/publications.html
+index a143c6f..429c348 100644
+--- a/themes/hugo-academic/layouts/partials/widgets/publications.html
++++ b/themes/hugo-academic/layouts/partials/widgets/publications.html
+@@ -9,7 +9,7 @@
+     {{ with $page.Params.subtitle }}<p>{{ . | markdownify }}</p>{{ end }}
+     {{ if gt $pubs_len $page.Params.count }}
+     <p class="view-all">
+-      <a href="{{ ($.Site.GetPage "/publication").Permalink }}">
++      <a href="{{ "/publication/" | absURL }}">
+         {{ i18n "more_publications" | markdownify }}
+         <i class="fa fa-angle-double-right"></i>
+       </a>
+diff --git a/themes/hugo-academic/layouts/partials/widgets/tag_cloud.html b/themes/hugo-academic/layouts/partials/widgets/tag_cloud.html
+index 9c5bc34..2b31914 100644
+--- a/themes/hugo-academic/layouts/partials/widgets/tag_cloud.html
++++ b/themes/hugo-academic/layouts/partials/widgets/tag_cloud.html
+@@ -24,7 +24,7 @@
+           {{ $tagCount := len $taxonomy.Pages }}
+           {{ $weight := div (sub (math.Log $tagCount) (math.Log $min)) (sub (math.Log $max) (math.Log $min)) }}
+           {{ $fontSize := add $fontSmall (mul (sub $fontBig $fontSmall) $weight) }}
+-          <a href="{{ ($.Site.GetPage (printf "/tags/%s" ($name | urlize))).Permalink }}" style="font-size:{{ $fontSize }}rem">{{ $name }}</a>
++          <a href="{{ (printf "/tags/%s/" ($name | urlize)) | absURL }}" style="font-size:{{ $fontSize }}rem">{{ $name }}</a>
+         {{ end }}
+       </div>
+     {{ end }}
+diff --git a/themes/hugo-academic/layouts/partials/widgets/talks.html b/themes/hugo-academic/layouts/partials/widgets/talks.html
+index bf5803d..a2a0a60 100644
+--- a/themes/hugo-academic/layouts/partials/widgets/talks.html
++++ b/themes/hugo-academic/layouts/partials/widgets/talks.html
+@@ -9,7 +9,7 @@
+     {{ with $page.Params.subtitle }}<p>{{ . | markdownify }}</p>{{ end }}
+     {{ if gt $talks_len $page.Params.count }}
+     <p class="view-all">
+-      <a href="{{ ($.Site.GetPage "/talk").Permalink }}">
++      <a href="{{ "/talk/" | absURL }}">
+         {{ i18n "more_talks" | markdownify }}
+         <i class="fa fa-angle-double-right"></i>
+       </a>
+diff --git a/themes/hugo-academic/layouts/publication/single.html b/themes/hugo-academic/layouts/publication/single.html
+index 91382f8..0bc05d1 100644
+--- a/themes/hugo-academic/layouts/publication/single.html
++++ b/themes/hugo-academic/layouts/publication/single.html
+@@ -32,7 +32,7 @@
+           <div class="col-xs-12 col-sm-3 pub-row-heading">{{ i18n "publication_type" }}</div>
+           <div class="col-xs-12 col-sm-9">
+             {{ range $index, $pubtype := .Params.publication_types }}
+-            <a href="{{ ($.Site.GetPage "/publication").Permalink }}#{{ . | urlize }}">
++            <a href="{{ "/publication/" | absURL }}#{{ . | urlize }}">
+               {{ index $.Site.Params.publication_types (int .) }}
+             </a>
+             {{ end }}
