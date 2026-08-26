@@ -43,7 +43,7 @@ weight = 2
  
 +++
 
-I'm a sociologist studying how the research system works — and how well-intentioned reforms can produce unexpected outcomes. I work as a Senior Scientist at the [Complex Social & Computational Systems group](https://idea-lab.uni-graz.at/en/specialist-areas/data-analysis/) at the [IDea_Lab](https://idea-lab.uni-graz.at/en/) at [University of Graz](https://www.uni-graz.at/en/).
+I'm a sociologist studying how the research system works — and how well-intentioned reforms can produce unexpected outcomes. I work as a Scientist at the [Complex Social & Computational Systems group](https://idea-lab.uni-graz.at/en/specialist-areas/data-analysis/) at the [IDea_Lab](https://idea-lab.uni-graz.at/en/) at [University of Graz](https://www.uni-graz.at/en/).
 
 In my previous research, I have investigated the academic impact of Open Science, synthesising evidence from hundreds of studies and conducting large-scale empirical analyses of publishing costs, knowledge production, and funding dynamics. A consistent finding has been that openness alone does not produce equity — its benefits are shaped by the conditions under which it is implemented, from how publishing is financed to who has the capacity to reuse what is shared.
 
